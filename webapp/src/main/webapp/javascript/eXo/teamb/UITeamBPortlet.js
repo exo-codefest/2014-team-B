@@ -4,6 +4,9 @@
 
     init : function(id) {
       UITeamBPortlet.id = id;
+      //
+      $('.effect-hover').on('mouseover', function() { $(this).addClass('display-over');})
+                        .on('mouseout', function() { $(this).removeClass('display-over');});
     },
     initTooltip : function(id) {
       if(id != null) {
