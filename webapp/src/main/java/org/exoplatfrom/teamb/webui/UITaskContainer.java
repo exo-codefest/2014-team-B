@@ -22,9 +22,9 @@ import org.exoplatform.webui.core.UIContainer;
 import org.exoplatform.webui.core.lifecycle.UIContainerLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
-import org.exoplatfrom.teamb.webui.from.UIPopupAction;
-import org.exoplatfrom.teamb.webui.from.UITaskForm;
-import org.exoplatfrom.teamb.webui.from.UIViewTaskForm;
+import org.exoplatfrom.teamb.webui.form.UIPopupAction;
+import org.exoplatfrom.teamb.webui.form.UITaskForm;
+import org.exoplatfrom.teamb.webui.form.UIViewTaskForm;
 
 @ComponentConfig(
   lifecycle = UIContainerLifecycle.class,
@@ -46,7 +46,7 @@ public class UITaskContainer extends UIContainer {
     public void execute(Event<UITaskContainer> event) throws Exception {
       UITeamBPortlet teamBPortlet = event.getSource().getParent();
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
-      popupAction.activate(UITaskForm.class, 400).setId("UIAddTaskForm");
+      popupAction.activate(UITaskForm.class, 700).setId("UIAddTaskForm");
       event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
     }
   }
@@ -56,7 +56,7 @@ public class UITaskContainer extends UIContainer {
       UITeamBPortlet teamBPortlet = event.getSource().getParent();
       String taskId = event.getRequestContext().getRequestParameter(OBJECTID);
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
-      UITaskForm taskForm = popupAction.activate(UITaskForm.class, 400);
+      UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
       taskForm.setTaskId(taskId).setId("UIEditTaskForm");
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }
@@ -67,7 +67,7 @@ public class UITaskContainer extends UIContainer {
       UITeamBPortlet teamBPortlet = event.getSource().getParent();
       String taskId = event.getRequestContext().getRequestParameter(OBJECTID);
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
-      UIViewTaskForm taskForm = popupAction.activate(UIViewTaskForm.class, 400);
+      UIViewTaskForm taskForm = popupAction.activate(UIViewTaskForm.class, 800);
       taskForm.setTaskId(taskId);
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }
