@@ -27,7 +27,7 @@
     <application-name>teamb</application-name>
     <portlet-name>TeamBPortlet</portlet-name>
     <skin-name>Default</skin-name>
-    <css-path>/skin/css/forum.css</css-path>
+    <css-path>/skin/css/teamb.css</css-path>
     <css-priority>1</css-priority>
   </portlet-skin>
 
@@ -66,7 +66,7 @@
       <module>webui-ext</module>
     </depends>
     <depends>
-      <module>bts_forum</module>
+      <module>bts_teamb</module>
     </depends>
     <depends>
       <module>bts_tooltip</module>

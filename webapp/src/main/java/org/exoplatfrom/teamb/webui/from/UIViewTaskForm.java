@@ -35,6 +35,8 @@ import org.exoplatfrom.teamb.webui.UITeamBPortlet;
 })
 public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
 
+  private String taskId;
+
   public UIViewTaskForm() {
   }
 
@@ -44,6 +46,14 @@ public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
 
   @Override
   public void deActivate() {
+  }
+  
+  public String getTaskId() {
+    return taskId;
+  }
+
+  public void setTaskId(String taskId) {
+    this.taskId = taskId;
   }
 
   static public class CloseActionListener extends EventListener<UIViewTaskForm> {

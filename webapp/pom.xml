@@ -323,7 +323,7 @@
               <sourceDirectory>${project.build.directory}/${project.build.finalName}/skin/less</sourceDirectory>
               <outputDirectory>${project.build.directory}/${project.build.finalName}/skin/css</outputDirectory>
               <includes>
-                <include>team-b.less</include>
+                <include>teamb.less</include>
               </includes>
             </configuration>
           </execution>

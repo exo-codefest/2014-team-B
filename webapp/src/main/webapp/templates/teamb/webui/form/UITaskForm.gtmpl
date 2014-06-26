@@ -2,7 +2,14 @@
 <div class="uiTaskForm">	
 	<% uiform.begin() %>	
   <div>
-   The add/edit Task from
+   <%
+   if (uicomponent.taskId != "") {
+     print ("Edit the task: " + uicomponent.taskId);
+   } else {
+     print ("Add new task");
+   }
+   %>
+   
   </div>
   <div class="uiAction">
     <%for(action in uicomponent.getActions()) { 

@@ -1,13 +1,19 @@
 <div class="uiTeamBPortlet" id="$uicomponent.id">
 <%
+_ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "jsTeamb")
+    .addScripts("jsTeamb.init('$uicomponent.id');jsTeamb.initTooltip('$uicomponent.id');");
+
 	List children = uicomponent.getChildren() ;
 	for(component in children) {
 		if(component.isRendered()) {
 			uicomponent.renderChild(component.getClass()) ; 
 		}
 	}
-
 %>
-uiTeamBPortlet
+<div><h1><%=_ctx.appRes("UITeamBPortlet.label.Welcome")%></h1></div>
+
+<button onclick="<%=uicomponent.event("AddTask")%>" class="btn" type="button">Add Task</button>
+<button onclick="<%=uicomponent.event("EditTask", "the taskId")%>" class="btn" type="button">Edit Task</button>
+<button onclick="<%=uicomponent.event("ViewTask", "the taskId")%>" class="btn" type="button">View Task</button>
 <div><span></span></div>
 </div>

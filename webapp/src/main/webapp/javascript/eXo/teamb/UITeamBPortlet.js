@@ -10,5 +10,6 @@
         $('#'+id).find('[rel=tooltip]').tooltip();
       }
     }
+  }
   return UITeamBPortlet;
 })(gj, window, document);

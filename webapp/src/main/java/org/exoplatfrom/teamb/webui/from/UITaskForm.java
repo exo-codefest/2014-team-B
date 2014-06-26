@@ -36,6 +36,8 @@ import org.exoplatfrom.teamb.webui.UITeamBPortlet;
 })
 public class UITaskForm extends BaseUIForm implements UIPopupComponent {
 
+  private String taskId = "";
+  
   public UITaskForm() {
   }
 
@@ -47,12 +49,19 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
   public void deActivate() {
   }
 
+  public String getTaskId() {
+    return taskId;
+  }
+
+  public UITaskForm setTaskId(String taskId) {
+    this.taskId = taskId;
+    return this;
+  }
+
   static public class SaveActionListener extends EventListener<UITaskForm> {
     public void execute(Event<UITaskForm> event) throws Exception {
       //
       UITeamBPortlet teamBPortlet = event.getSource().getAncestorOfType(UITeamBPortlet.class);
-      
-      
       
       teamBPortlet.cancelAction();
     }

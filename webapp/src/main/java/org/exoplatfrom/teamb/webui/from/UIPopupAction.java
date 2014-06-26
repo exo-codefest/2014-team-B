@@ -54,6 +54,10 @@ public class UIPopupAction extends UIContainer {
     return comp;
   }
 
+  public <T extends UIComponent> T activate(Class<T> type, String configId, int width) throws Exception {
+    return activate(type, configId, width, 0);
+  }
+
   public void activate(UIComponent uiComponent, int width, int height)
       throws Exception {
     activate(uiComponent, width, height, true);
