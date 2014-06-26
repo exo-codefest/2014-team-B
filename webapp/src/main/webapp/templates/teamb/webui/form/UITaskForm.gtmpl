@@ -1,16 +1,40 @@
 
-<div class="uiTaskForm">	
-	<% uiform.begin() %>	
-  <div>
-   <%
-   if (uicomponent.taskId != "") {
-     print ("Edit the task: " + uicomponent.taskId);
-   } else {
-     print ("Add new task");
-   }
-   %>
-   
-  </div>
+<div class="uiTaskForm">
+		<% uiform.begin() %>	
+	  <div class="resizable">
+    <div class="form-horizontal">
+      <% 
+        for(field in uiform.getChildren()) { 
+          if(field.isRendered()) {
+      %>
+            <div class="control-group">
+              <%fieldName = uicomponent.getLabel(field.getName());%>
+              <%if(!fieldName.equals(uicomponent.getId()) && fieldName != null && fieldName.length() > 0) { %>                        
+                <% if(field.getName().equals("upload") == false) {%>
+                <div class="control-label">
+                  <label for="<%=field.getId()%>"><%=fieldName%>:</label>
+                </div>
+                
+                <div class="controls">
+                  <% uiform.renderField(field) %>
+                </div>
+                <%} else {%>
+                  <div class="controlUpload controls-full"><% uiform.renderField(field) %></div>
+                <%} %>
+              <%} else {%>
+                <div class="controls">
+                  <label><% uiform.renderField(field) %></label>
+                </div>
+              <%}%>
+            </div>
+      <%
+          }
+        }
+      %>
+        
+    </div>
+    </div>
+  
   <div class="uiAction">
     <%for(action in uicomponent.getActions()) { 
 		 String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action); 

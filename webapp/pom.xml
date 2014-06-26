@@ -34,7 +34,10 @@
   <description>Codefest 2014 - Team B Addon - A portlet or any webapp</description>
   
   <dependencies>
-    
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-service</artifactId>
+    </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>

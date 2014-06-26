@@ -16,8 +16,14 @@
  */
 package org.exoplatfrom.teamb.webui;
 
+import java.util.Date;
+
 import javax.portlet.PortletMode;
 
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.webui.application.WebuiApplication;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.application.portlet.PortletRequestContext;
@@ -28,9 +34,9 @@ import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
-import org.exoplatfrom.teamb.webui.from.UIPopupAction;
-import org.exoplatfrom.teamb.webui.from.UITaskForm;
-import org.exoplatfrom.teamb.webui.from.UIViewTaskForm;
+import org.exoplatfrom.teamb.webui.form.UIPopupAction;
+import org.exoplatfrom.teamb.webui.form.UITaskForm;
+import org.exoplatfrom.teamb.webui.form.UIViewTaskForm;
 
 @ComponentConfig(
    lifecycle = UIApplicationLifecycle.class,
@@ -65,7 +71,7 @@ public class UITeamBPortlet extends UIPortletApplication {
     public void execute(Event<UITeamBPortlet> event) throws Exception {
       UITeamBPortlet teamBPortlet = event.getSource();
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
-      popupAction.activate(UITaskForm.class, 400).setId("UIAddTaskForm");
+      popupAction.activate(UITaskForm.class, 650).setId("UIAddTaskForm");
       event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
     }
   }
@@ -75,7 +81,7 @@ public class UITeamBPortlet extends UIPortletApplication {
       UITeamBPortlet teamBPortlet = event.getSource();
       String taskId = event.getRequestContext().getRequestParameter(OBJECTID);
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
-      UITaskForm taskForm = popupAction.activate(UITaskForm.class, 400);
+      UITaskForm taskForm = popupAction.activate(UITaskForm.class, 650);
       taskForm.setTaskId(taskId).setId("UIEditTaskForm");
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }
@@ -86,10 +92,40 @@ public class UITeamBPortlet extends UIPortletApplication {
       UITeamBPortlet teamBPortlet = event.getSource();
       String taskId = event.getRequestContext().getRequestParameter(OBJECTID);
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
-      UIViewTaskForm taskForm = popupAction.activate(UIViewTaskForm.class, 400);
+      UIViewTaskForm taskForm = popupAction.activate(UIViewTaskForm.class, 650);
       taskForm.setTaskId(taskId);
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }
   }
-
+  
+  public void createCalendarEvent(String currentUser, String category, String summary, String type, Date from, Date to) throws Exception{
+    CalendarService calendarService = CommonsUtils.getService(CalendarService.class);
+    String calendarId = currentUser + "-defaultCalendarId";
+    //create eventCategory
+    EventCategory eventCategory = new EventCategory();
+    eventCategory.setName(category);
+    calendarService.saveEventCategory(currentUser, eventCategory, true);
+    //create calendarEvent
+    CalendarEvent calendarEvent = new CalendarEvent();
+    calendarEvent.setEventCategoryId(eventCategory.getId());
+    calendarEvent.setEventCategoryName(eventCategory.getName());
+    calendarEvent.setSummary(summary);
+    calendarEvent.setEventType(CalendarEvent.TYPE_TASK) ;
+    calendarEvent.setEventState(CalendarEvent.NEEDS_ACTION) ;
+    calendarEvent.setCalType(type);
+    calendarEvent.setTaskDelegator(currentUser);
+    //
+    calendarEvent.setFromDateTime(from);
+    calendarEvent.setToDateTime(to);
+    
+    if(type.equals("0")) {
+      calendarService.saveUserEvent(currentUser, calendarId, calendarEvent, true) ;
+    }else if(type.equals("1")){
+      calendarService.saveEventToSharedCalendar(currentUser, calendarId, calendarEvent, true) ;
+    }else if(type.equals("2")){
+      calendarService.savePublicEvent(calendarId, calendarEvent, true) ;          
+    }
+    
+  }
+  
 }

@@ -14,7 +14,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program; if not, see<http://www.gnu.org/licenses/>.
  */
-package org.exoplatfrom.teamb.webui.from;
+package org.exoplatfrom.teamb.webui.form;
 
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
@@ -28,17 +28,16 @@ import org.exoplatfrom.teamb.webui.UITeamBPortlet;
 
 @ComponentConfigs({
   @ComponentConfig(lifecycle = UIFormLifecycle.class, 
-    template = "app:/templates/teamb/webui/form/UITaskForm.gtmpl", 
+    template = "app:/templates/teamb/webui/form/UIViewTaskForm.gtmpl", 
     events = {
-      @EventConfig(listeners = UITaskForm.SaveActionListener.class),
-      @EventConfig(listeners = UITaskForm.CloseActionListener.class, phase = Phase.DECODE)
+      @EventConfig(listeners = UIViewTaskForm.CloseActionListener.class, phase = Phase.DECODE)
   })
 })
-public class UITaskForm extends BaseUIForm implements UIPopupComponent {
+public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
 
-  private String taskId = "";
-  
-  public UITaskForm() {
+  private String taskId;
+
+  public UIViewTaskForm() {
   }
 
   @Override
@@ -48,27 +47,17 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
   @Override
   public void deActivate() {
   }
-
+  
   public String getTaskId() {
     return taskId;
   }
 
-  public UITaskForm setTaskId(String taskId) {
+  public void setTaskId(String taskId) {
     this.taskId = taskId;
-    return this;
   }
 
-  static public class SaveActionListener extends EventListener<UITaskForm> {
-    public void execute(Event<UITaskForm> event) throws Exception {
-      //
-      UITeamBPortlet teamBPortlet = event.getSource().getAncestorOfType(UITeamBPortlet.class);
-      
-      teamBPortlet.cancelAction();
-    }
-  }
-
-  static public class CloseActionListener extends EventListener<UITaskForm> {
-    public void execute(Event<UITaskForm> event) throws Exception {
+  static public class CloseActionListener extends EventListener<UIViewTaskForm> {
+    public void execute(Event<UIViewTaskForm> event) throws Exception {
       UITeamBPortlet teamBPortlet = event.getSource().getAncestorOfType(UITeamBPortlet.class);
       teamBPortlet.cancelAction();
     }
