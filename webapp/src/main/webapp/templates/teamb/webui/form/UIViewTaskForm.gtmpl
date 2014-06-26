@@ -1,16 +1,140 @@
-
+<%
+String summaryLabel = _ctx.appRes("UITeamBPopupWindow.label.Summary");
+String reporterLabel = _ctx.appRes("UITeamBPopupWindow.label.Reporter");
+String priorityLabel = _ctx.appRes("UITeamBPopupWindow.label.Priority");
+String bvLabel = _ctx.appRes("UITeamBPopupWindow.label.BV");
+String createDateLabel = _ctx.appRes("UITeamBPopupWindow.label.CreateDate");
+String groupLabel = _ctx.appRes("UITeamBPopupWindow.label.Group");
+String assigneeLabel = _ctx.appRes("UITeamBPopupWindow.label.Assignee");
+String statusLabel = _ctx.appRes("UITeamBPopupWindow.label.Status");
+String dueDateLabel = _ctx.appRes("UITeamBPopupWindow.label.DueDate");
+String completenessLabel = _ctx.appRes("UITeamBPopupWindow.label.Completeness");
+String completedDateLabel = _ctx.appRes("UITeamBPopupWindow.label.CompletedDate");
+String descriptionLabel = _ctx.appRes("UITeamBPopupWindow.label.Description");
+String noteLabel = _ctx.appRes("UITeamBPopupWindow.label.Note");
+String editLabel = _ctx.appRes("UITeamBPopupWindow.label.Edit");
+String saveLabel = _ctx.appRes("UITeamBPopupWindow.label.Save");
+String cancelLabel = _ctx.appRes("UITeamBPopupWindow.label.Cancel");
+String closeLabel = _ctx.appRes("UIViewTaskForm.action.Close");
+%>
 <div class="uiTaskForm">	
 	<% uiform.begin() %>	
-  <div>
-   The View Task from
+  <div id="taskViewBlock" class="form-horizontal">
+    <table>
+      <tr>
+        <td>
+          <div class="control-group">
+           <div class="control-label"><strong>$summaryLabel</strong></div>
+           <div class="controls">
+             
+           </div>
+          </div>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="control-group">
+           <div class="control-label" >$reporterLabel:</div>
+           <div class="controls">
+           </div>
+          </div>
+        </td>
+        <td>
+          <div class="control-group">
+           <div class="control-label" >$assigneeLabel:</div>
+           <div class="controls">
+           </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="control-group">
+           <div class="control-label" >$priorityLabel:</div>
+           <div class="controls">
+           </div>
+          </div>
+        </td>
+        <td>
+          <div class="control-group">
+           <div class="control-label" >$statusLabel:</div>
+           <div class="controls">
+           </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="control-group">
+           <div class="control-label" >$bvLabel:</div>
+           <div class="controls">
+           </div>
+          </div>
+        </td>
+        <td>
+          <div class="control-group">
+           <div class="control-label" >$dueDateLabel:</div>
+           <div class="controls">
+           </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="control-group">
+           <div class="control-label" >$createDateLabel:</div>
+           <div class="controls">
+           </div>
+          </div>
+        </td>
+        <td>
+          <div class="control-group">
+           <div class="control-label" >$completenessLabel:</div>
+           <div class="controls">
+           </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="control-group">
+           <div class="control-label" >$groupLabel:</div>
+           <div class="controls">
+           </div>
+          </div>
+        </td>
+        <td>
+          <div class="control-group">
+           <div class="control-label" >$completedDateLabel:</div>
+           <div class="controls">
+           </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="control-group">
+           <div class="control-label" >$descriptionLabel:</div>
+           <div class="controls">
+           </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="control-group">
+           <div class="control-label" >$noteLabel:</div>
+           <div class="controls">
+           </div>
+          </div>
+        </td>
+      </tr>
+    </table>
   </div>
   <div class="uiAction">
-    <%for(action in uicomponent.getActions()) { 
-		 String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action); 
-		 String link = uicomponent.event(action) ;
-	%>
-		<button onclick="$link" class="btn" type="button">$actionLabel</button>
-      <%}%>
-  </div>
+    <button onclick="<%=uicomponent.event("EditTask", "the taskId")%>" class="btn" type="button">$editLabel</button>
+    <button onclick="<%=uicomponent.event("Close")%>" class="btn" type="button">$closeLabel</button>
+	</div>
 	<%uiform.end()%>
 </div>

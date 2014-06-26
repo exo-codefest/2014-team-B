@@ -30,7 +30,8 @@ import org.exoplatfrom.teamb.webui.UITeamBPortlet;
   @ComponentConfig(lifecycle = UIFormLifecycle.class, 
     template = "app:/templates/teamb/webui/form/UIViewTaskForm.gtmpl", 
     events = {
-      @EventConfig(listeners = UIViewTaskForm.CloseActionListener.class, phase = Phase.DECODE)
+      @EventConfig(listeners = UIViewTaskForm.CloseActionListener.class, phase = Phase.DECODE),
+      @EventConfig(listeners = UIViewTaskForm.EditTaskActionListener.class)
   })
 })
 public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
@@ -56,6 +57,18 @@ public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
     this.taskId = taskId;
   }
 
+  static public class EditTaskActionListener extends EventListener<UIViewTaskForm> {
+    public void execute(Event<UIViewTaskForm> event) throws Exception {
+      UITeamBPortlet teamBPortlet = event.getSource().getAncestorOfType(UITeamBPortlet.class);
+      teamBPortlet.cancelAction();
+      String taskId = event.getRequestContext().getRequestParameter(OBJECTID);
+      UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
+      UITaskForm taskForm = popupAction.activate(UITaskForm.class, 400);
+      taskForm.setTaskId(taskId).setId("UIEditTaskForm");
+      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
+    }
+  }
+  
   static public class CloseActionListener extends EventListener<UIViewTaskForm> {
     public void execute(Event<UIViewTaskForm> event) throws Exception {
       UITeamBPortlet teamBPortlet = event.getSource().getAncestorOfType(UITeamBPortlet.class);
