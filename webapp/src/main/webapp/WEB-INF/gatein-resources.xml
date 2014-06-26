@@ -24,7 +24,7 @@
     xmlns="http://www.gatein.org/xml/ns/gatein_resources_1_3">
 
   <portlet-skin>
-    <application-name>teamb</application-name>
+    <application-name>team-b-addon-webapp</application-name>
     <portlet-name>TeamBPortlet</portlet-name>
     <skin-name>Default</skin-name>
     <css-path>/skin/css/teamb.css</css-path>
