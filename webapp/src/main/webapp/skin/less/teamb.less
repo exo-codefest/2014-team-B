@@ -5,11 +5,11 @@
 
 @import "popup/uiTaskForm/Style.less";
 @import "popup/uiViewTaskForm/Style.less";
+@import url('/calendar/skin/css/calendar.css');
 
 .uiTeamBPortlet {
 	max-width: 99.8%;
 	min-height: 400px;
-	border: solid 1px blue;
 	padding: 15px;
 	
 	a.item-hover {
@@ -20,8 +20,39 @@
 		visibility: visible;
 	}
 	
-	.TaskContainer .uiGrid.table td {
-		vertical-align:top;
+	.TaskContainer {
+		.uiGrid.table td {
+			vertical-align:top;
+			padding: 8px 5px;
+		}
+		.taskTitle {
+			float: left;
+		}
+	}
+	
+	.uiActionBar {
+		.alignBtnGroup {
+		    text-align: center;
+		}
+		.UIForm {
+			float: none;
+		}
+		.uiSelectbox {
+			width: 150px;
+			margin: 0px 10px;
+			select.selectbox {
+				width: 150px;
+			}
+		}
+		.uiChangeView {
+			float: right;
+		}
+		.uiSearchInput label {
+			margin: 0px;
+		}
+	}
+	.ellipsis {
+  	display:block;width:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 	}
 }
 

@@ -16,7 +16,9 @@
  */
 package org.exoplatfrom.teamb.webui;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.portlet.PortletMode;
 
@@ -34,6 +36,7 @@ import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
+import org.exoplatfrom.teamb.webui.form.UIChangeView;
 import org.exoplatfrom.teamb.webui.form.UIPopupAction;
 import org.exoplatfrom.teamb.webui.form.UITaskForm;
 import org.exoplatfrom.teamb.webui.form.UIViewTaskForm;
@@ -44,20 +47,28 @@ import org.exoplatfrom.teamb.webui.form.UIViewTaskForm;
      events = {
      @EventConfig(listeners = UITeamBPortlet.AddTaskActionListener.class ),
      @EventConfig(listeners = UITeamBPortlet.EditTaskActionListener.class),
+     @EventConfig(listeners = UITeamBPortlet.ViewDayActionListener.class ),
+     @EventConfig(listeners = UITeamBPortlet.ViewWeekActionListener.class ),
+     @EventConfig(listeners = UITeamBPortlet.ViewMonthActionListener.class ),
      @EventConfig(listeners = UITeamBPortlet.ViewTaskActionListener.class )
    }
 )
 public class UITeamBPortlet extends UIPortletApplication {
-
+  
+  public static final String DEFAULT_VIEW = "personal";
+  private String groupToViewId = DEFAULT_VIEW; 
+  
   public UITeamBPortlet() throws Exception {
     UIPopupAction popupAction = addChild(UIPopupAction.class, null, "UITeamBPopupAction");
     popupAction.getChild(UIPopupWindow.class).setId("UITeamBPopupWindow");
+    addChild(UIChangeView.class, null, null);
   }
 
   public void processRender(WebuiApplication app, WebuiRequestContext context) throws Exception {
     PortletRequestContext portletReqContext = (PortletRequestContext) context;
     PortletMode portletMode = portletReqContext.getApplicationMode();
     if (portletMode == PortletMode.VIEW) {
+      getChild(UIChangeView.class).initOptionsValue();
     } else if (portletMode == PortletMode.EDIT) {
     }
     super.processRender(app, context);
@@ -65,6 +76,36 @@ public class UITeamBPortlet extends UIPortletApplication {
 
   public void cancelAction() throws Exception {
     getChild(UIPopupAction.class).cancelPopupAction();
+  }
+  
+  /**
+   * @return
+   */
+  public String getGroupToViewId() {
+    return groupToViewId;
+  }
+
+  /**
+   * Set groupId to view
+   * @param groupToViewId
+   */
+  public void setGroupToViewId(String groupToViewId) {
+    this.groupToViewId = groupToViewId;
+  }
+
+  public List getDone() {
+    List list = new ArrayList();
+    return list;
+  }
+
+  public List getInprogress() {
+    List list = new ArrayList();
+    return list;
+  }
+
+  public List getOpen() {
+    List list = new ArrayList();
+    return list;
   }
 
   public void createCalendarEvent(String currentUser, String category, String summary, String type, Date from, Date to) throws Exception{
@@ -125,6 +166,27 @@ public class UITeamBPortlet extends UIPortletApplication {
       UIViewTaskForm taskForm = popupAction.activate(UIViewTaskForm.class, 800);
       taskForm.setTaskId(taskId);
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
+    }
+  }
+
+  static public class ViewMonthActionListener extends EventListener<UITeamBPortlet> {
+    public void execute(Event<UITeamBPortlet> event) throws Exception {
+      UITeamBPortlet teamBPortlet = event.getSource();
+      event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
+    }
+  }
+
+  static public class ViewWeekActionListener extends EventListener<UITeamBPortlet> {
+    public void execute(Event<UITeamBPortlet> event) throws Exception {
+      UITeamBPortlet teamBPortlet = event.getSource();
+      event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
+    }
+  }
+
+  static public class ViewDayActionListener extends EventListener<UITeamBPortlet> {
+    public void execute(Event<UITeamBPortlet> event) throws Exception {
+      UITeamBPortlet teamBPortlet = event.getSource();
+      event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
     }
   }
 }

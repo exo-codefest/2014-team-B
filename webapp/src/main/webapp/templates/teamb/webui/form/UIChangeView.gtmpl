@@ -1,0 +1,17 @@
+<div class="uiChangeView">
+	<%uiform.begin();%>
+		<div class="uiSearchInput clearfix">
+		<% 
+      for(field in uiform.getChildren()) { 
+        if(field.isRendered()) {
+    %>
+    	<label for="<%=field.getId()%>" class="pull-left">
+    		<% uiform.renderField(field); %>
+    	</label>
+     <%
+        }
+      }
+    %>
+   </div>
+	<%uiform.end();%>
+</div>
