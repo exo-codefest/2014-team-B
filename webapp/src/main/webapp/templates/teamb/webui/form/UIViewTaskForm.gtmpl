@@ -1,21 +1,21 @@
 <%
-String summaryLabel = _ctx.appRes("UITeamBPopupWindow.label.Summary");
-String reporterLabel = _ctx.appRes("UITeamBPopupWindow.label.Reporter");
-String priorityLabel = _ctx.appRes("UITeamBPopupWindow.label.Priority");
-String bvLabel = _ctx.appRes("UITeamBPopupWindow.label.BV");
-String createDateLabel = _ctx.appRes("UITeamBPopupWindow.label.CreateDate");
-String groupLabel = _ctx.appRes("UITeamBPopupWindow.label.Group");
-String assigneeLabel = _ctx.appRes("UITeamBPopupWindow.label.Assignee");
-String statusLabel = _ctx.appRes("UITeamBPopupWindow.label.Status");
-String dueDateLabel = _ctx.appRes("UITeamBPopupWindow.label.DueDate");
-String completenessLabel = _ctx.appRes("UITeamBPopupWindow.label.Completeness");
-String completedDateLabel = _ctx.appRes("UITeamBPopupWindow.label.CompletedDate");
-String descriptionLabel = _ctx.appRes("UITeamBPopupWindow.label.Description");
-String noteLabel = _ctx.appRes("UITeamBPopupWindow.label.Note");
-String editLabel = _ctx.appRes("UITeamBPopupWindow.label.Edit");
-String saveLabel = _ctx.appRes("UITeamBPopupWindow.label.Save");
-String cancelLabel = _ctx.appRes("UITeamBPopupWindow.label.Cancel");
-String closeLabel = _ctx.appRes("UIViewTaskForm.action.Close");
+String summaryLabel = _ctx.appRes("UIViewTaskForm.label.Summary");
+String reporterLabel = _ctx.appRes("UIViewTaskForm.label.Reporter");
+String priorityLabel = _ctx.appRes("UIViewTaskForm.label.Priority");
+String bvLabel = _ctx.appRes("UIViewTaskForm.label.BV");
+String createDateLabel = _ctx.appRes("UIViewTaskForm.label.CreateDate");
+String groupLabel = _ctx.appRes("UIViewTaskForm.label.Group");
+String assigneeLabel = _ctx.appRes("UIViewTaskForm.label.Assignee");
+String statusLabel = _ctx.appRes("UIViewTaskForm.label.Status");
+String dueDateLabel = _ctx.appRes("UIViewTaskForm.label.DueDate");
+String completenessLabel = _ctx.appRes("UIViewTaskForm.label.Completeness");
+String completedDateLabel = _ctx.appRes("UIViewTaskForm.label.CompletedDate");
+String descriptionLabel = _ctx.appRes("UIViewTaskForm.label.Description");
+String noteLabel = _ctx.appRes("UIViewTaskForm.label.Note");
+String editLabel = _ctx.appRes("UIViewTaskForm.label.Edit");
+String cancelLabel = _ctx.appRes("UIViewTaskForm.label.Cancel");
+String saveLabel = _ctx.appRes("UITaskForm.action.Save");
+String closeLabel = _ctx.appRes("UITaskForm.action.Close");
 %>
 <div class="uiTaskForm">	
 	<% uiform.begin() %>	
