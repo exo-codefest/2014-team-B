@@ -94,14 +94,35 @@ Features:
 
 Usages:
 --------------------
-* Create a new task: Tasks Management Tool home >> Click to Add Task >> Input details into form >> Save
-* Start a task: Tasks Management Tool home >> In the Open list >> Drag and Drop an item to Inprogress list
-* Finish a task: Tasks Management Tool home >> In the Inprogress list>> Drag and Drop an item to Done list; set time spent, set note
-* Switch to this Week view: Tasks Management Tool home >> Click to WEEK
-* Switch to this Month view: Tasks Management Tool home >> Click to MONTH
-* Filter assigned task by group: Tasks Management Tool home >> Click to Group box >> Select a suitable group
-* View/Update task detail: Tasks Management Tool home >> Click to item's setting button
-* View tasks in calendar page: Tasks Management Tool home >> Click to Calendar button
+* Create a new task:
+    * Tasks Management Tool home
+    * Click to Add Task
+    * Input details into form
+    * Save
+* Start a task:
+    * Tasks Management Tool home
+    * In the Open list
+    * Drag and Drop an item to Inprogress list
+* Finish a task:
+    * Tasks Management Tool home
+    * In the Inprogress list
+    * Drag and Drop an item to Done list; set time spent, set note
+* Switch to this Week view
+    * Tasks Management Tool home
+    * Click to WEEK
+* Switch to this Month view
+    * Tasks Management Tool home
+    * Click to MONTH
+* Filter assigned task by group
+    * Tasks Management Tool home
+    * Click to Group box
+    * Select a suitable group
+* View/Update task detail
+    * Tasks Management Tool home
+    * Click to item's setting button
+* View tasks in calendar page
+    * Tasks Management Tool home
+    * Click to Calendar button
 * For collaboration groups:
     * create a space for a collaboration group first, calendar of the group will be come the group collaboration calendar
     * set the management tool filter group to the correct collaboration group
