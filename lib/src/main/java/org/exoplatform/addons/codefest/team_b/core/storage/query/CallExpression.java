@@ -14,51 +14,42 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.exoplatform.addons.codefest.team_b.core.storage;
+package org.exoplatform.addons.codefest.team_b.core.storage.query;
+
+import org.exoplatform.addons.codefest.team_b.core.storage.PropertyLiteralExpression;
+import org.exoplatform.social.core.storage.query.QueryFunction;
 
 /**
  * Created by The eXo Platform SAS
  * Author : eXoPlatform
  *          exo@exoplatform.com
- * Jun 26, 2014  
+ * Jun 27, 2014  
  */
-public class PropertyLiteralExpression<T>  {
+public class CallExpression <T> {
 
-  private final Class<T> type;
-  private final String jcrName;
-  private final String propertyName;
+  private final QueryFunction function;
+  private final PropertyLiteralExpression<T> property;
 
-  public PropertyLiteralExpression(final Class<T> type, final String jcrProperty, String propertyName) {
+  public CallExpression(final QueryFunction function, final PropertyLiteralExpression<T> property) {
 
-    if (type == null) {
-      throw new NullPointerException();
-    }
-
-    if (jcrProperty == null) {
+    if (function == null) {
       throw new NullPointerException();
     }
     
-    if (propertyName == null) {
+    if (property == null) {
       throw new NullPointerException();
     }
 
-    this.type = type;
-    this.jcrName = jcrProperty;
-    this.propertyName = propertyName;
+    this.function = function;
+    this.property = property;
   }
 
-  public Class<T> getType() {
-    return type;
+  public QueryFunction getFunction() {
+    return function;
   }
 
-  public String getName() {
-    return jcrName;
+  public PropertyLiteralExpression<T> getProperty() {
+    return property;
   }
-
-  public String getPropertyName() {
-    return propertyName;
-  }
-  
-  
 
 }

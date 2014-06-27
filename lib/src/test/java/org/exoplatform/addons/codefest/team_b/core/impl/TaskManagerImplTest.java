@@ -29,6 +29,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
+import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
 /**
@@ -99,8 +100,7 @@ public class TaskManagerImplTest extends AbstractCoreTest {
     Task task = TaskDataBuilder.initOne(demoIdentity).injectOne();
     
     task.setValue(TaskEntity.title, "title issue has been updated");
-    taskManager.save(task);
-    
+    taskManager.update(demoIdentity, task, TaskEntity.title.getPropertyName());
     
     Task got = taskManager.get(task.getId());
     
@@ -123,5 +123,37 @@ public class TaskManagerImplTest extends AbstractCoreTest {
     
     List<Task> list = taskManager.getAll();
     assertEquals(10, list.size());
+  }
+  
+  public void testGetAllByReporter() throws Exception {
+    tearDownTaskList = TaskDataBuilder.initMore(10, demoIdentity).inject();
+    
+    tearDownTaskList.addAll(TaskDataBuilder.initMore(10, johnIdentity).inject());
+    
+    List<Task> list = taskManager.getAll();
+    assertEquals(20, list.size());
+    
+    dump(list);
+    
+    list = taskManager.getAllByReporter(demoIdentity.getRemoteId());
+    assertEquals(10, list.size());
+  }
+  
+  public void testGetAllByAssignee() throws Exception {
+    tearDownTaskList = TaskDataBuilder.initMore(10, "task xxx", demoIdentity, maryIdentity).inject();
+    
+    tearDownTaskList.addAll(TaskDataBuilder.initMore(10, "task xxx", johnIdentity, maryIdentity).inject());
+    
+    List<Task> list = taskManager.getAll();
+    assertEquals(20, list.size());
+    
+    list = taskManager.getAllByAssignee(maryIdentity.getRemoteId());
+    assertEquals(20, list.size());
+  }
+  
+  private void dump(List<Task> list) {
+    for(Task t : list) {
+      LOG.info(t.toString());
+    }
   }
 }

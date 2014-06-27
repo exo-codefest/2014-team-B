@@ -148,6 +148,13 @@
   <component>
     <key>org.exoplatform.addons.codefest.team_b.core.api.TaskManager</key>
     <type>org.exoplatform.addons.codefest.team_b.core.impl.TaskManagerImpl</type>
+    <component-plugins>
+      <component-plugin>
+        <name>TaskUpdatesPublisher</name>
+        <set-method>addTaskListener</set-method>
+        <type>org.exoplatform.addons.codefest.team_b.core.listener.TaskUpdatesPublisher</type>
+      </component-plugin>
+    </component-plugins>
   </component>
 
   <component>
@@ -726,7 +733,7 @@
  		  <init-params>
  		    <properties-param>
  		      <name>namespaces</name>
-          <property name="soc" value="http://www.social.org/jcr/soc/1.0/"/>
+          <property name="exo" value="http://www.social.org/jcr/exo/1.0/"/>
         </properties-param>
       </init-params>
  		</component-plugin>

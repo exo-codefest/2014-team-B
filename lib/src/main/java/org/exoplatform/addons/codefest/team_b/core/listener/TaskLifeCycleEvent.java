@@ -14,51 +14,46 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.exoplatform.addons.codefest.team_b.core.storage;
+package org.exoplatform.addons.codefest.team_b.core.listener;
+
+import org.exoplatform.addons.codefest.team_b.core.model.Task;
+import org.exoplatform.social.common.lifecycle.LifeCycleEvent;
 
 /**
  * Created by The eXo Platform SAS
  * Author : eXoPlatform
  *          exo@exoplatform.com
- * Jun 26, 2014  
+ * Jun 27, 2014  
  */
-public class PropertyLiteralExpression<T>  {
+public class TaskLifeCycleEvent extends LifeCycleEvent<String, Task> {
+  
+  public enum Type {NEW_TASK, ASSIGNED_TASK, LOGGED_WORK, UPDATED_DESCRIPTION, IN_PROGRESS, REOPEN, RESOLVED, CLOSED, ESTIMATION}
 
-  private final Class<T> type;
-  private final String jcrName;
-  private final String propertyName;
-
-  public PropertyLiteralExpression(final Class<T> type, final String jcrProperty, String propertyName) {
-
-    if (type == null) {
-      throw new NullPointerException();
-    }
-
-    if (jcrProperty == null) {
-      throw new NullPointerException();
-    }
-    
-    if (propertyName == null) {
-      throw new NullPointerException();
-    }
-
+  private Type type;
+  
+  public TaskLifeCycleEvent(Type type, String user, Task task) {
+    super(user, task);
     this.type = type;
-    this.jcrName = jcrProperty;
-    this.propertyName = propertyName;
   }
-
-  public Class<T> getType() {
+  
+  public Type getType() {
     return type;
   }
-
-  public String getName() {
-    return jcrName;
+  
+  /**
+   * username of the task updated
+   * @return
+   */
+  public String getUsername() {
+    return source;
   }
 
-  public String getPropertyName() {
-    return propertyName;
+  /**
+   * actual task section;
+   * @return
+   */
+  public Task getTask() {
+    return payload;
   }
-  
-  
 
 }

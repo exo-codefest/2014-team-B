@@ -21,6 +21,7 @@ import java.util.List;
 import org.exoplatform.addons.codefest.team_b.core.impl.TaskManagerImpl;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter;
+import org.exoplatform.social.core.identity.model.Identity;
 
 
 /**
@@ -32,11 +33,11 @@ import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter;
 public class SynchronizedTaskManager extends TaskManagerImpl {
 
   @Override
-  public Task save(Task task) {
+  public Task save(Identity reporter, Task task) {
     
     boolean created = startSynchronization();
     try {
-      return super.save(task);
+      return super.save(reporter, task);
     }
     finally {
       stopSynchronization(created);
@@ -77,10 +78,10 @@ public class SynchronizedTaskManager extends TaskManagerImpl {
   }
   
   @Override
-  public void update(Task task, String... propertyNames) {
+  public void update(Identity updater, Task task, String... propertyNames) {
     boolean created = startSynchronization();
     try {
-      super.update(task, propertyNames);
+      super.update(updater, task, propertyNames);
     }
     finally {
       stopSynchronization(created);

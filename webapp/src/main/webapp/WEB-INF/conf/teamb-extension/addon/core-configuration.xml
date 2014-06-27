@@ -28,6 +28,13 @@
   <component>
     <key>org.exoplatform.addons.codefest.team_b.core.api.TaskManager</key>
     <type>org.exoplatform.addons.codefest.team_b.core.impl.TaskManagerImpl</type>
+    <component-plugins>
+      <component-plugin>
+        <name>TaskUpdatesPublisher</name>
+        <set-method>addTaskListener</set-method>
+        <type>org.exoplatform.addons.codefest.team_b.core.listener.TaskUpdatesPublisher</type>
+      </component-plugin>
+    </component-plugins>
   </component>
 
   <component>

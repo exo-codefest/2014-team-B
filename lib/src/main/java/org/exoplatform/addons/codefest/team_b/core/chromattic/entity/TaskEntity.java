@@ -51,6 +51,15 @@ public abstract class TaskEntity implements NamedEntity {
       new PropertyLiteralExpression<String>(String.class, "uuid", "id");
   
   /**
+   * The activityId of the task
+   */
+  @Property(name = "exo:activityId")
+  public abstract String getActivityId();
+  public abstract void setActivityId(String activityId);
+  public static final PropertyLiteralExpression<String> activityId =
+    new PropertyLiteralExpression<String>(String.class, "exo:activityId", "activityId");
+  
+  /**
    * The taskId of the task
    */
   @Property(name = "exo:title")
@@ -101,8 +110,8 @@ public abstract class TaskEntity implements NamedEntity {
    * BLOCKER, CRITICAL, MAJOR, MINNOR
    */
   @Property(name = "exo:priority")
-  public abstract String getPriority();
-  public abstract void setPriority(String priority);
+  public abstract Integer getPriority();
+  public abstract void setPriority(Integer priority);
   public static final PropertyLiteralExpression<String> priority =
     new PropertyLiteralExpression<String>(String.class, "exo:priority", "priority");
   

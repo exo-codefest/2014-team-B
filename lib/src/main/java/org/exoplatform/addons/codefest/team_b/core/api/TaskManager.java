@@ -18,9 +18,11 @@ package org.exoplatform.addons.codefest.team_b.core.api;
 
 import java.util.List;
 
+import org.exoplatform.addons.codefest.team_b.core.listener.TaskListenerPlugin;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.social.core.identity.model.Identity;
 
 /**
  * Created by The eXo Platform SAS
@@ -35,7 +37,7 @@ public interface TaskManager {
    * @param task
    * @return
    */
-  public Task save(Task task);
+  public Task save(Identity identity, Task task);
   
   /**
    * 
@@ -45,6 +47,20 @@ public interface TaskManager {
    * @return
    */
   public List<Task> getAll();
+
+  /**
+   * Gets all of task by reporter
+   * @param reporter the reporter as remoteId
+   * @return
+   */
+  public List<Task> getAllByReporter(String reporter);
+  
+  /**
+   * Gets all of task by assignee
+   * @param assignee the assignee as remoteId
+   * @return
+   */
+  public List<Task> getAllByAssignee(String assignee);
   
   /**
    * 
@@ -85,7 +101,7 @@ public interface TaskManager {
    * @param task
    * @return
    */
-  public void update(Task task, String ...propertyNames);
+  public void update(Identity updater, Task task, String ...propertyNames);
   
   
   /**
@@ -94,5 +110,11 @@ public interface TaskManager {
    * @param id the id
    */
   public void delete(String id);
+  
+  /**
+   * Adds the Task Listener plugin
+   * @param plugin the plugin
+   */
+  public void addTaskListener(TaskListenerPlugin plugin);
   
 }

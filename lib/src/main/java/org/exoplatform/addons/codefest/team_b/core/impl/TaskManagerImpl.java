@@ -25,7 +25,6 @@ import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.Task
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.fixVersion;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.groupId;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.linkUrl;
-import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.priority;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.remaining;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.reporterId;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.resolution;
@@ -41,16 +40,28 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.jcr.NodeIterator;
+
+import org.chromattic.api.query.Ordering;
+import org.chromattic.api.query.QueryBuilder;
+import org.chromattic.api.query.QueryResult;
 import org.exoplatform.addons.codefest.team_b.core.api.TaskListAccess;
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TasksRootEntity;
+import org.exoplatform.addons.codefest.team_b.core.listener.TaskLifeCycle;
+import org.exoplatform.addons.codefest.team_b.core.listener.TaskListenerPlugin;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter;
 import org.exoplatform.addons.codefest.team_b.core.storage.NodeNotFoundException;
+import org.exoplatform.addons.codefest.team_b.core.storage.query.WhereExpression;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
 
 /**
  * Created by The eXo Platform SAS
@@ -61,16 +72,25 @@ import org.exoplatform.services.log.Log;
 public class TaskManagerImpl extends AbstractManager implements TaskManager {
   
   private static final Log LOG = ExoLogger.getLogger(TaskManagerImpl.class);
+  
+  private final TaskLifeCycle taskLifeCycle;
 
+  public TaskManagerImpl() {
+    taskLifeCycle = new TaskLifeCycle();
+  }
+  
   @Override
-  public Task save(Task task) {
+  public Task save(Identity identity, Task task) {
     String id = task.getId();
     //
     if (id == null) {
       _create(task);
+      taskLifeCycle.createdTask(identity.getRemoteId(), task);
     } else {
       _save(task);
     }
+    
+    getSession().save();
     //
     return task;
   }
@@ -109,7 +129,7 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     entity.setAssigneeId(task.getValue(assigneeId));
     entity.setReporterId(task.getValue(reporterId));
     entity.setType(task.getValue(type));
-    entity.setPriority(task.getValue(priority));
+    entity.setPriority(task.getPriority());
     entity.setAffectVersion(task.getValue(affectVersion));
     entity.setFixVersion(task.getValue(fixVersion));
     entity.setBusinessValue(task.getValue(businessValue));
@@ -139,7 +159,7 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     task.setValue(assigneeId, entity.getAssigneeId());
     task.setValue(reporterId, entity.getReporterId());
     task.setValue(type, entity.getType());
-    task.setValue(priority, entity.getPriority());
+    task.setPriority(entity.getPriority());
     task.setValue(affectVersion, entity.getAffectVersion());
     task.setValue(fixVersion, entity.getFixVersion());
     task.setValue(businessValue, entity.getBusinessValue());
@@ -192,19 +212,40 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
   }
 
   @Override
-  public void update(Task task, String... propertyNames) {
+  public void update(Identity updater, Task task, String... propertyNames) {
     String id = task.getValue(TaskEntity.id);
     try {
       TaskEntity entity = _findById(TaskEntity.class, id);
       
       for(String name : propertyNames) {
         //
-        if (name.equals(updatedTime.getPropertyName())) {
-          entity.setUpdatedTime(task.getValue(updatedTime));
+       if (name.equals(status.getPropertyName())) {
+          String status = task.getValue(TaskEntity.status);
+          if (Task.STATUS.CLOSED.equals(status)) {
+            taskLifeCycle.closedTask(updater.getRemoteId(), task);
+          } else if (Task.STATUS.IN_PROGRESS.equals(status)) {
+            taskLifeCycle.inProgressTask(updater.getRemoteId(), task);
+          } else if (Task.STATUS.REOPEN.equals(status)) {
+            taskLifeCycle.reopenedTask(updater.getRemoteId(), task);
+          } else if (Task.STATUS.RESOLVED.equals(status)) {
+            taskLifeCycle.resolvedTask(updater.getRemoteId(), task);
+          }
+          entity.setStatus(status);
+        } else if (name.equals(title.getPropertyName()) || name.equals(description.getPropertyName())) {
+          taskLifeCycle.updatedTask(updater.getRemoteId(), task);
+          entity.setTitle(task.getValue(title));
+          entity.setDescription(task.getValue(description));
+        } else if (name.equals(workLogged.getPropertyName())) {
+          taskLifeCycle.logWorkTask(updater.getRemoteId(), task);
+          //TODO need add when log work
+          entity.setWorkLogged(task.getValue(workLogged));
+        } else if (name.equals(assigneeId.getPropertyName())) {
+          taskLifeCycle.assginedTask(updater.getRemoteId(), task);
+          entity.setAssigneeId(task.getValue(assigneeId));
         }
-        
-        //TODO add mode here...
       }
+      
+      getSession().save();
       
     } catch (NodeNotFoundException e) {
       LOG.info("Can not find the task by the given id = " + id, e.getMessage());
@@ -235,10 +276,95 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     List<Task> result = new ArrayList<Task>();
     Task task = null;
     while(it.hasNext()) {
+      TaskEntity entity = it.next();
+      LOG.info("path = " + entity.getPath());
       task = new Task();
-      fillModelFromEntity(it.next(), task);
+      fillModelFromEntity(entity, task);
       result.add(task);
     }
     return result;
   }
+
+  @Override
+  public void addTaskListener(TaskListenerPlugin plugin) {
+    this.taskLifeCycle.addListener(plugin);
+  }
+
+  @Override
+  public List<Task> getAllByReporter(String reporter) {
+    IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
+    Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, reporter);
+    
+    QueryBuilder<TaskEntity> builder = getSession().createQueryBuilder(TaskEntity.class);
+    WhereExpression whereExpression = new WhereExpression();
+    whereExpression.startGroup();
+    whereExpression.equals(TaskEntity.reporterId, identity.getId());
+    whereExpression.endGroup();
+    
+    LOG.info("getAllByReporter::query = " + whereExpression.toString());
+    builder.where(whereExpression.toString());
+    
+    builder.orderBy(TaskEntity.priority.getName(), Ordering.DESC);
+    builder.orderBy(TaskEntity.businessValue.getName(), Ordering.DESC);
+    
+
+    List<Task> tasks = new ArrayList<Task>();
+
+    try {
+      //
+      QueryResult<TaskEntity> results = builder.get().objects();
+
+      LOG.info("getAllByReporter::size = " + results.size());
+      
+      while (results.hasNext()) {
+        TaskEntity currentTask = results.next();
+        Task t = new Task();
+        fillModelFromEntity(currentTask, t);
+        tasks.add(t);
+      }
+    } catch (Exception e) {
+      LOG.info("Failed query", e.getMessage());
+    }
+    return tasks;
+  }
+  
+
+  @Override
+  public List<Task> getAllByAssignee(String assignee) {
+    IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
+    Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, assignee);
+    
+    QueryBuilder<TaskEntity> builder = getSession().createQueryBuilder(TaskEntity.class);
+    WhereExpression whereExpression = new WhereExpression();
+    whereExpression.startGroup();
+    whereExpression.equals(TaskEntity.assigneeId, identity.getId());
+    whereExpression.endGroup();
+    
+    LOG.info("getAllByAssignee::query = " + whereExpression.toString());
+    builder.where(whereExpression.toString());
+    
+    builder.orderBy(TaskEntity.priority.getName(), Ordering.DESC);
+    builder.orderBy(TaskEntity.businessValue.getName(), Ordering.DESC);
+    
+
+    List<Task> tasks = new ArrayList<Task>();
+
+    try {
+      //
+      QueryResult<TaskEntity> results = builder.get().objects();
+
+      LOG.info("getAllByAssignee::size = " + results.size());
+      
+      while (results.hasNext()) {
+        TaskEntity currentTask = results.next();
+        Task t = new Task();
+        fillModelFromEntity(currentTask, t);
+        tasks.add(t);
+      }
+    } catch (Exception e) {
+      LOG.info("Failed query", e.getMessage());
+    }
+    return tasks;
+  }
+
 }

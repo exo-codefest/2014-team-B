@@ -24,7 +24,6 @@ import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.Task
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.fixVersion;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.groupId;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.linkUrl;
-import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.priority;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.remaining;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.reporterId;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.resolution;
@@ -103,7 +102,7 @@ public class TaskDataBuilder {
       }
       task.setValue(reporterId, reporter.getId());
       task.setValue(type, "Bug");
-      task.setValue(priority, "Major");
+      task.setPriority(Task.PRIORITY.MAJOR.getValue());
       task.setValue(affectVersion, "4.1-M1");
       task.setValue(fixVersion, "4.1-RC1");
       task.setValue(businessValue, 68L + i);
@@ -120,7 +119,7 @@ public class TaskDataBuilder {
       task.setValue(linkUrl, "https://jira.exoplatform.org/browse/SOC-4316");
 
       try {
-        task = manager.save(task);
+        task = manager.save(reporter, task);
         list.add(task);
       } catch (Exception e) {
         LOG.error("can not save activity.", e);
@@ -144,7 +143,7 @@ public class TaskDataBuilder {
       task.setValue(reporterId, reporter.getId());
     }
     task.setValue(type, "Bug");
-    task.setValue(priority, "Major");
+    task.setPriority(Task.PRIORITY.MAJOR.getValue());
     task.setValue(affectVersion, "4.1-M1");
     task.setValue(fixVersion, "4.1-RC1");
     task.setValue(businessValue, 68L);
@@ -161,7 +160,7 @@ public class TaskDataBuilder {
     task.setValue(linkUrl, "https://jira.exoplatform.org/browse/SOC-4316");
 
     try {
-      task = manager.save(task);
+      task = manager.save(reporter, task);
     } catch (Exception e) {
       LOG.error("can not save activity.", e);
     }
@@ -178,7 +177,7 @@ public class TaskDataBuilder {
     task.setValue(assigneeId, assignee.getId());
     task.setValue(reporterId, reporter.getId());
     task.setValue(type, "Bug");
-    task.setValue(priority, "Major");
+    task.setPriority(Task.PRIORITY.MAJOR.getValue());
     task.setValue(affectVersion, "4.1-M1");
     task.setValue(fixVersion, "4.1-RC1");
     task.setValue(businessValue, 68L);
