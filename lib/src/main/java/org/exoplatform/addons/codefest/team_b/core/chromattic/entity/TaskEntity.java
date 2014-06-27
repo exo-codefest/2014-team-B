@@ -161,22 +161,22 @@ public abstract class TaskEntity implements NamedEntity {
     new PropertyLiteralExpression<Integer>(Integer.class, "exo:resolvedTime", "resolvedTime");
   
   @Property(name = "exo:estimation")
-  public abstract Integer getEstimation();
-  public abstract void setEstimation(Integer estimation);
-  public static final PropertyLiteralExpression<Integer> estimation =
-    new PropertyLiteralExpression<Integer>(Integer.class, "exo:estimation", "estimation");
+  public abstract String getEstimation();
+  public abstract void setEstimation(String estimation);
+  public static final PropertyLiteralExpression<String> estimation =
+    new PropertyLiteralExpression<String>(String.class, "exo:estimation", "estimation");
   
   @Property(name = "exo:remaining")
-  public abstract Long getRemanining();
-  public abstract void setRemaining(Long remanining);
-  public static final PropertyLiteralExpression<Long> remaining =
-    new PropertyLiteralExpression<Long>(Long.class, "exo:remaining", "remaining");
+  public abstract String getRemaining();
+  public abstract void setRemaining(String remanining);
+  public static final PropertyLiteralExpression<String> remaining =
+    new PropertyLiteralExpression<String>(String.class, "exo:remaining", "remaining");
   
   @Property(name = "exo:workLogged")
-  public abstract Double getWorkLogged();
-  public abstract void setWorkLogged(Double workLogged);
-  public static final PropertyLiteralExpression<Double> workLogged =
-    new PropertyLiteralExpression<Double>(Double.class, "exo:workLogged", "workLogged");
+  public abstract String getWorkLogged();
+  public abstract void setWorkLogged(String workLogged);
+  public static final PropertyLiteralExpression<String> workLogged =
+    new PropertyLiteralExpression<String>(String.class, "exo:workLogged", "workLogged");
   
   @Property(name = "exo:groupId")
   public abstract String getGroupId();

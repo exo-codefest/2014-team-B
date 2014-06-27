@@ -34,8 +34,20 @@ public class Task extends HashMap<String, Object> {
    */
   private static final long serialVersionUID = 1L;
   
+  /**
+   * Gets the task's id
+   * @return
+   */
   public String getId() {
     return getValue(TaskEntity.id);
+  }
+  
+  /**
+   * Sets the task's id
+   * @param id
+   */
+  public void setId(String id) {
+    setValue(TaskEntity.id, id);
   }
 
   /**

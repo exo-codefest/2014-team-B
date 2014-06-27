@@ -59,16 +59,16 @@ public class TaskDataBuilder {
   private Identity reporter;
   private int numberOfTasks;
   
-  public static TaskDataBuilder initOne(Identity poster) {
-    return initMore(1, null, poster, null);
+  public static TaskDataBuilder initOne(Identity reporter) {
+    return initMore(1, null, reporter, null);
   }
   
-  public static TaskDataBuilder initOne(String description, Identity poster) {
-    return initMore(1, description, poster, null);
+  public static TaskDataBuilder initOne(String description, Identity reporter) {
+    return initMore(1, description, reporter, null);
   }
   
-  public static TaskDataBuilder initMore(int number, Identity poster) {
-    return initMore(number, null, poster, null);
+  public static TaskDataBuilder initMore(int number, Identity reporter) {
+    return initMore(number, null, reporter, null);
   }
   
   public static TaskDataBuilder initMore(int number, String title, Identity reporter) {
@@ -98,7 +98,9 @@ public class TaskDataBuilder {
       Task task = new Task();
       task.setValue(taskId, "" + i);
       task.setValue(TaskEntity.title, "Task title " + i);
-      task.setValue(assigneeId, assignee.getId());
+      if (assignee != null) {
+        task.setValue(assigneeId, assignee.getId());
+      }
       task.setValue(reporterId, reporter.getId());
       task.setValue(type, "Bug");
       task.setValue(priority, "Major");
@@ -111,9 +113,9 @@ public class TaskDataBuilder {
       task.setValue(createdTime, System.currentTimeMillis());
       task.setValue(updatedTime, System.currentTimeMillis());
       task.setValue(resolvedTime, -1);
-      task.setValue(estimation, 2);
-      task.setValue(remaining, 2L);
-      task.setValue(workLogged, 1.1);
+      task.setValue(estimation, "2d");
+      task.setValue(remaining, "2d");
+      task.setValue(workLogged, "0d");
       task.setValue(groupId, "/spaces/space_1");
       task.setValue(linkUrl, "https://jira.exoplatform.org/browse/SOC-4316");
 
@@ -135,8 +137,12 @@ public class TaskDataBuilder {
 
     task.setValue(taskId, "1");
     task.setValue(TaskEntity.title, "Task title");
-    task.setValue(assigneeId, assignee.getId());
-    task.setValue(reporterId, reporter.getId());
+    if (assignee != null) {
+      task.setValue(assigneeId, assignee.getId());
+    }
+    if (reporter != null) {
+      task.setValue(reporterId, reporter.getId());
+    }
     task.setValue(type, "Bug");
     task.setValue(priority, "Major");
     task.setValue(affectVersion, "4.1-M1");
@@ -148,9 +154,9 @@ public class TaskDataBuilder {
     task.setValue(createdTime, System.currentTimeMillis());
     task.setValue(updatedTime, System.currentTimeMillis());
     task.setValue(resolvedTime, -1);
-    task.setValue(estimation, 2);
-    task.setValue(remaining, 2L);
-    task.setValue(workLogged, 1.1);
+    task.setValue(estimation, "2d");
+    task.setValue(remaining, "2d");
+    task.setValue(workLogged, "0d");
     task.setValue(groupId, "/spaces/space_1");
     task.setValue(linkUrl, "https://jira.exoplatform.org/browse/SOC-4316");
 
@@ -182,9 +188,9 @@ public class TaskDataBuilder {
     task.setValue(createdTime, System.currentTimeMillis());
     task.setValue(updatedTime, System.currentTimeMillis());
     task.setValue(resolvedTime, -1);
-    task.setValue(estimation, 2);
-    task.setValue(remaining, 2L);
-    task.setValue(workLogged, 1.1);
+    task.setValue(estimation, "2d");
+    task.setValue(remaining, "2d");
+    task.setValue(workLogged, "0d");
     task.setValue(groupId, "/spaces/space_1");
     task.setValue(linkUrl, "https://jira.exoplatform.org/browse/SOC-4316");
 

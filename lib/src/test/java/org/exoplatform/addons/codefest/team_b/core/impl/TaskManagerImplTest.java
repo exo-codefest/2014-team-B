@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
+import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
+import org.exoplatform.addons.codefest.team_b.core.data.TaskDataBuilder;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.addons.codefest.team_b.core.test.AbstractCoreTest;
 import org.exoplatform.services.log.ExoLogger;
@@ -65,6 +67,7 @@ public class TaskManagerImplTest extends AbstractCoreTest {
   public void tearDown() throws Exception {
     for (Task t : tearDownTaskList) {
       try {
+        taskManager.delete(t.getId());
       } catch (Exception e) {
         LOG.warn("can not delete task with id: " + t.getId());
       }
@@ -77,7 +80,48 @@ public class TaskManagerImplTest extends AbstractCoreTest {
   }
   
   public void testCreateTask() throws Exception {
-    assertTrue(true);
+    Task task = TaskDataBuilder.initOne(demoIdentity).injectOne();
+    assertNotNull(task.getId());
+    assertTrue(task.getId().length() > 0);
+    
+    tearDownTaskList.add(task);
   }
   
+  public void testGetTask() throws Exception {
+    Task task = TaskDataBuilder.initOne(demoIdentity).injectOne();
+    task = taskManager.get(task.getId());
+    assertNotNull(task);
+    assertTrue(task.getValue(TaskEntity.title).length() > 0);
+    tearDownTaskList.add(task);
+  }
+  
+  public void testUpdateTask() throws Exception {
+    Task task = TaskDataBuilder.initOne(demoIdentity).injectOne();
+    
+    task.setValue(TaskEntity.title, "title issue has been updated");
+    taskManager.save(task);
+    
+    
+    Task got = taskManager.get(task.getId());
+    
+    assertNotNull(got);
+    assertEquals(task.getValue(TaskEntity.title), got.getValue(TaskEntity.title));
+    
+    tearDownTaskList.add(task);
+  }
+  
+  public void testDeleteTask() throws Exception {
+    Task task = TaskDataBuilder.initOne(demoIdentity).injectOne();
+    taskManager.delete(task.getId());
+    
+    Task got = taskManager.get(task.getId());
+    assertNull(got);
+  }
+  
+  public void testGetAll() throws Exception {
+    tearDownTaskList = TaskDataBuilder.initMore(10, demoIdentity).inject();
+    
+    List<Task> list = taskManager.getAll();
+    assertEquals(10, list.size());
+  }
 }

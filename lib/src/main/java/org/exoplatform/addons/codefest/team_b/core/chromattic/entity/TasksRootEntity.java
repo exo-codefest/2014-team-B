@@ -16,6 +16,7 @@
  */
 package org.exoplatform.addons.codefest.team_b.core.chromattic.entity;
 
+import java.util.List;
 import java.util.Map;
 
 import org.chromattic.api.annotations.Create;
@@ -47,6 +48,9 @@ public abstract class TasksRootEntity {
 
   @OneToMany
   public abstract Map<String, TaskEntity> getTasks();
+  
+  @OneToMany
+  public abstract List<TaskEntity> getTaskList();
 
   @Create
   public abstract TaskEntity createTask(String name);

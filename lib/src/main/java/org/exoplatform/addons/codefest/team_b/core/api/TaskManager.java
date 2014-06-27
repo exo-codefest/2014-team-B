@@ -44,6 +44,15 @@ public interface TaskManager {
    * @param limit
    * @return
    */
+  public List<Task> getAll();
+  
+  /**
+   * 
+   * @param filter
+   * @param offset
+   * @param limit
+   * @return
+   */
   public ListAccess<Task> find(TaskFilter filter);
   
   /**

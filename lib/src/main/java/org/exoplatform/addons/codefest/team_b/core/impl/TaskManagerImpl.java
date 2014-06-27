@@ -37,6 +37,8 @@ import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.Task
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.updatedTime;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.workLogged;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.exoplatform.addons.codefest.team_b.core.api.TaskListAccess;
@@ -62,9 +64,9 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
 
   @Override
   public Task save(Task task) {
-    String id = task.getValue(TaskEntity.id);
+    String id = task.getId();
     //
-    if (id != null) {
+    if (id == null) {
       _create(task);
     } else {
       _save(task);
@@ -82,10 +84,18 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     
     long currentMillis = System.currentTimeMillis();
     Long createdTime = task.getValue(TaskEntity.createdTime) != null ? task.getValue(TaskEntity.createdTime) : currentMillis;
-    //
-    TaskEntity entity = root.createTask(String.valueOf(createdTime));
-    
-    fillEntityFromModel(task, entity);
+    try {
+      //
+      String taskName = String.valueOf(createdTime);
+      TaskEntity entity = root.createTask(taskName);
+      root.getTasks().put(taskName, entity);
+      //
+      LOG.info("taskId: " + entity.getId());
+      task.setId(entity.getId());
+      fillEntityFromModel(task, entity);
+    } catch (Exception e) {
+      LOG.warn("Creates the task unseccessfully.", e.getMessage());
+    }
   }
   
   /**
@@ -123,6 +133,7 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
    * @param task
    */
   private void fillModelFromEntity(TaskEntity entity, Task task) {
+    task.setId(entity.getId());
     task.setValue(taskId, entity.getTaskId());
     task.setValue(title, entity.getTitle());
     task.setValue(assigneeId, entity.getAssigneeId());
@@ -139,7 +150,7 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     task.setValue(updatedTime, entity.getUpdatedTime());
     task.setValue(resolvedTime, entity.getResolvedTime());
     task.setValue(estimation, entity.getEstimation());
-    task.setValue(remaining, entity.getRemanining());
+    task.setValue(remaining, entity.getRemaining());
     task.setValue(workLogged, entity.getWorkLogged());
     task.setValue(groupId, entity.getGroupId());
     task.setValue(linkUrl, entity.getLinkUrl());
@@ -150,7 +161,13 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
    * @param task the given task
    */
   private void _save(Task task) {
-    
+    String id = task.getValue(TaskEntity.id);
+    try {
+      TaskEntity entity = _findById(TaskEntity.class, id);
+      fillEntityFromModel(task, entity);
+    } catch (NodeNotFoundException e) {
+      LOG.info("Can not find the task by the given id = " + id, e.getMessage());
+    }
   }
 
   @Override
@@ -169,6 +186,7 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
       fillModelFromEntity(entity, task);
     } catch (NodeNotFoundException e) {
       LOG.info("Can not find the task by the given id = " + id, e.getMessage());
+      return null;
     }
     return task;
   }
@@ -207,5 +225,20 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
   public void delete(String id) {
     _removeById(TaskEntity.class, id);
     
+  }
+
+  @Override
+  public List<Task> getAll() {
+    TasksRootEntity root = getTasksRoot();
+    Iterator<TaskEntity> it = root.getTaskList().iterator();
+    
+    List<Task> result = new ArrayList<Task>();
+    Task task = null;
+    while(it.hasNext()) {
+      task = new Task();
+      fillModelFromEntity(it.next(), task);
+      result.add(task);
+    }
+    return result;
   }
 }
