@@ -22,10 +22,21 @@ import java.util.List;
 
 import javax.portlet.PortletMode;
 
+import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.portal.application.PortalRequestContext;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
+import org.exoplatform.services.security.MembershipEntry;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.application.WebuiApplication;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.application.portlet.PortletRequestContext;
@@ -34,6 +45,7 @@ import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
+import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatfrom.teamb.webui.form.UIChangeView;
@@ -59,6 +71,16 @@ public class UITeamBPortlet extends UIPortletApplication {
   private String groupToViewId = DEFAULT_VIEW;
   private String tabActive = "Day"; 
   
+  private static final Log   LOG                          = ExoLogger.getLogger(UITeamBPortlet.class);
+
+  public static final String ANY                          = "*.*";
+
+  public static final String SLASH_COLON                  = "/:";
+
+  public static final String DEFAULT_EVENTCATEGORY_ID_ALL = "defaultEventCategoryIdAll";
+
+  public static final String DEFAULT_EVENTCATEGORY_NAME   = "All";
+
   public UITeamBPortlet() throws Exception {
     UIPopupAction popupAction = addChild(UIPopupAction.class, null, "UITeamBPopupAction");
     popupAction.getChild(UIPopupWindow.class).setId("UITeamBPopupWindow");
@@ -113,42 +135,80 @@ public class UITeamBPortlet extends UIPortletApplication {
     return tabActive ;
   }
 
-  public void createCalendarEvent(String currentUser, String category, String summary, String type, Date from, Date to) throws Exception{
+  public void createCalendarEvent(String currentUser, String summary, Date dueDate, String groupId, String priority) throws Exception{
     CalendarService calendarService = CommonsUtils.getService(CalendarService.class);
-    String calendarId = currentUser + "-defaultCalendarId";
-    //create eventCategory
-    EventCategory eventCategory = new EventCategory();
-    eventCategory.setName(category);
-    calendarService.saveEventCategory(currentUser, eventCategory, true);
+    String calendarId = getCalendarByGroupId(groupId).getId();
+    //
+    EventCategory eventCategory = calendarService.getEventCategory(currentUser, DEFAULT_EVENTCATEGORY_ID_ALL);
     //create calendarEvent
     CalendarEvent calendarEvent = new CalendarEvent();
     calendarEvent.setEventCategoryId(eventCategory.getId());
-    calendarEvent.setEventCategoryName(eventCategory.getName());
+    calendarEvent.setEventCategoryName(DEFAULT_EVENTCATEGORY_NAME);
     calendarEvent.setSummary(summary);
     calendarEvent.setEventType(CalendarEvent.TYPE_TASK) ;
     calendarEvent.setEventState(CalendarEvent.NEEDS_ACTION) ;
-    calendarEvent.setCalType(type);
+    calendarEvent.setCalType("" + Calendar.TYPE_PUBLIC);
     calendarEvent.setTaskDelegator(currentUser);
+    calendarEvent.setPriority(priority);
     //
-    calendarEvent.setFromDateTime(from);
-    calendarEvent.setToDateTime(to);
+    calendarEvent.setFromDateTime(new Date());
+    calendarEvent.setToDateTime(dueDate);
     
-    if(type.equals("0")) {
-      calendarService.saveUserEvent(currentUser, calendarId, calendarEvent, true) ;
-    }else if(type.equals("1")){
-      calendarService.saveEventToSharedCalendar(currentUser, calendarId, calendarEvent, true) ;
-    }else if(type.equals("2")){
-      calendarService.savePublicEvent(calendarId, calendarEvent, true) ;          
+    calendarService.savePublicEvent(calendarId, calendarEvent, true) ;          
+    
+  }
+  
+  private Calendar getCalendarByGroupId(String groupId) throws Exception {
+    CalendarService calendarService = CommonsUtils.getService(CalendarService.class);
+    SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
+    Space space = spaceService.getSpaceByGroupId(groupId);
+    if (space == null) return null;
+    String calendarId = Utils.getCalendarIdFromSpace(groupId);
+    Calendar calendar = null;
+    try {
+      calendar = calendarService.getGroupCalendar(calendarId);
+    } catch (Exception e) {
+      LOG.warn("Desired calendar for " + space.getPrettyName() + " is not exist, create a new calendar.");
+      calendar = null;
     }
-    
+    if (calendar == null) {
+      calendar = new Calendar();
+      calendar.setId(calendarId);
+      calendar.setPublic(false);
+      calendar.setGroups((new String[] { space.getGroupId() }));
+      calendar.setName(space.getDisplayName());
+      calendar.setEditPermission(new String[] { space.getGroupId() + SLASH_COLON + ANY });
+      calendar.setCalendarOwner(groupId);
+      calendar.setCalendarColor(Calendar.COLORS[0]);
+      calendarService.savePublicCalendar(calendar, true);
+    }
+    return calendar;
   }
   
   static public class AddTaskActionListener extends EventListener<UITeamBPortlet> {
     public void execute(Event<UITeamBPortlet> event) throws Exception {
       UITeamBPortlet teamBPortlet = event.getSource();
+      WebuiRequestContext context  = event.getRequestContext();
+      List<SelectItemOption<String>> list = new ArrayList<SelectItemOption<String>>();
+      Identity identity = ConversationState.getCurrent().getIdentity();
+      for (MembershipEntry membership : identity.getMemberships()) {
+        String gr = membership.getGroup();
+        if (gr.startsWith("/spaces") && ! list.contains(new SelectItemOption<String>(gr, gr))) {
+          list.add(new SelectItemOption<String>(gr, gr));
+        }
+      }
+      if (list.isEmpty()) {
+        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.groupNotFound", new String[]{}, ApplicationMessage.WARNING));
+        ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
+        return;
+      }
+      
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
-      popupAction.activate(UITaskForm.class, 700).setId("UIAddTaskForm");
-      event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
+      UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
+      taskForm.setId("UIAddTaskForm");
+      taskForm.setGroups(list);
+      taskForm.initForm(identity.getUserId());
+      context.addUIComponentToUpdateByAjax(teamBPortlet);
     }
   }
 

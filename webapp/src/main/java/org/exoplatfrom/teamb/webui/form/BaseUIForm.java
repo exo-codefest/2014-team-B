@@ -16,6 +16,9 @@
  */
 package org.exoplatfrom.teamb.webui.form;
 
+import org.exoplatform.portal.application.PortalRequestContext;
+import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
@@ -29,4 +32,56 @@ public class BaseUIForm extends UIForm {
       teamBPortlet.cancelAction();
     }
   }
+  
+  
+  /**
+   * Sends a warning message to ui and ignore ajax update on Portlets
+   * @param messageKey resource bundle key for the message
+   */
+  protected void warning(String messageKey) {
+    warning(messageKey, null, true);
+  }
+
+  protected void warning(String messageKey, String arg) {
+    warning(messageKey, new String[] { arg });
+  }
+  
+  protected void warning(String messageKey, String[] args) {
+    warning(messageKey, args, true);
+  }
+  
+  /**
+   * Sends a warning message to ui
+   * @param messageKey resource bundle key for the message
+   * @param ignoreAJAXUpdateOnPortlets as there is need to update only UI components 
+   * of portal (ie: the components outside portlet windows) are updated by AJAX.
+   */
+  protected void warning(String messageKey, boolean ignoreAJAXUpdateOnPortlets) {
+    warning(messageKey, null, ignoreAJAXUpdateOnPortlets);
+  }
+
+  /**
+   * Sends a parameterized warning to ui
+   * @param messageKey
+   * @param args arguments of the message
+   * @param ignoreAJAXUpdateOnPortlets as there is need to update only UI components 
+   * of portal (ie: the components outside portlet windows) are updated by AJAX.
+   */
+  protected void warning(String messageKey, String[] args, boolean ignoreAJAXUpdateOnPortlets) {
+    message(messageKey, args, ApplicationMessage.WARNING, ignoreAJAXUpdateOnPortlets);
+  }
+  
+  /**
+   * Sends a warning message to ui
+   * @param messageKey resource bundle key for the message
+   * @param messageType {@link ApplicationMessage}
+   * @param ignoreAJAXUpdateOnPortlets as there is need to update only UI components 
+   * of portal (ie: the components outside portlet windows) are updated by AJAX.
+   */
+  private void message(String messageKey, String[] args, int messageType, boolean ignoreAJAXUpdateOnPortlets) {
+    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
+    context.getUIApplication().addMessage(new ApplicationMessage(messageKey, args, messageType));
+    ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(ignoreAJAXUpdateOnPortlets);
+  }
+  
 }
