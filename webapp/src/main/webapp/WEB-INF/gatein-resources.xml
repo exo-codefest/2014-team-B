@@ -57,6 +57,9 @@
     </script>
     
     <depends>
+      <module>TaskDragDrop</module>
+    </depends>
+    <depends>
       <module>uiForm</module>
     </depends>
     <depends>
@@ -79,6 +82,21 @@
     </depends>
     <depends>
       <module>base</module>
+    </depends>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+  </module>
+
+  <module>
+    <name>TaskDragDrop</name>
+    <script>
+      <path>/javascript/eXo/teamb/DragDrop.js</path>
+    </script>
+    <depends>
+      <module>ForumEventManager</module>
+      <as>forumEventManager</as>
     </depends>
     <depends>
       <module>jquery</module>

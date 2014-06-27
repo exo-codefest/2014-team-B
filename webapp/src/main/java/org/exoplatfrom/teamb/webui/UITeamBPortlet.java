@@ -64,7 +64,8 @@ import org.exoplatfrom.teamb.webui.form.UIViewTaskForm;
      @EventConfig(listeners = UITeamBPortlet.ViewDayActionListener.class ),
      @EventConfig(listeners = UITeamBPortlet.ViewWeekActionListener.class ),
      @EventConfig(listeners = UITeamBPortlet.ViewMonthActionListener.class ),
-     @EventConfig(listeners = UITeamBPortlet.ViewTaskActionListener.class )
+     @EventConfig(listeners = UITeamBPortlet.ViewTaskActionListener.class ),
+     @EventConfig(listeners = UITeamBPortlet.DragDropActionListener.class )
    }
 )
 public class UITeamBPortlet extends UIPortletApplication {
@@ -277,6 +278,18 @@ public class UITeamBPortlet extends UIPortletApplication {
       UITeamBPortlet teamBPortlet = event.getSource();
       teamBPortlet.tabActive = "Day";
       event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
+    }
+  }
+
+  static public class DragDropActionListener extends EventListener<UITeamBPortlet> {
+    public void execute(Event<UITeamBPortlet> event) throws Exception {
+      UITeamBPortlet teamBPortlet = event.getSource();
+      String taskId = event.getRequestContext().getRequestParameter(OBJECTID);
+      String newTaskStatus = event.getRequestContext().getRequestParameter("taskstatus");
+      
+      System.out.println("TaskId: " + taskId);
+      System.out.println("New Status: " + newTaskStatus);
+      ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
     }
   }
 }

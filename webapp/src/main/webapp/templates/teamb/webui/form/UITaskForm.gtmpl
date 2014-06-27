@@ -13,7 +13,6 @@
                 <div class="control-label">
                   <label for="<%=field.getId()%>"><%=fieldName%>:</label>
                 </div>
-                
                 <div class="controls">
                   <% uiform.renderField(field) %>
                 </div>
