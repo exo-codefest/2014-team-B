@@ -103,6 +103,13 @@ public interface TaskManager {
    */
   public void update(Identity updater, Task task, String ...propertyNames);
   
+  /**
+   * 
+   * @param task
+   * @return
+   */
+  public void update(String remoteId, Task task, String ...propertyNames);
+  
   
   /**
    * Deletes the task by the given Id

@@ -367,4 +367,11 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     return tasks;
   }
 
+  @Override
+  public void update(String updater, Task task, String... propertyNames) {
+    IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
+    Identity identityUpdater = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, updater);
+    update(identityUpdater, task, propertyNames);
+  }
+
 }
