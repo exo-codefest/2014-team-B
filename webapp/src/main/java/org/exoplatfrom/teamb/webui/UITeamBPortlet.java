@@ -191,10 +191,12 @@ public class UITeamBPortlet extends UIPortletApplication {
       WebuiRequestContext context  = event.getRequestContext();
       List<SelectItemOption<String>> list = new ArrayList<SelectItemOption<String>>();
       Identity identity = ConversationState.getCurrent().getIdentity();
+      List<String> spaces = new ArrayList<String>();
       for (MembershipEntry membership : identity.getMemberships()) {
         String gr = membership.getGroup();
-        if (gr.startsWith("/spaces") && ! list.contains(new SelectItemOption<String>(gr, gr))) {
+        if (gr.startsWith("/spaces") && ! spaces.contains(gr)) {
           list.add(new SelectItemOption<String>(gr, gr));
+          spaces.add(gr);
         }
       }
       if (list.isEmpty()) {
