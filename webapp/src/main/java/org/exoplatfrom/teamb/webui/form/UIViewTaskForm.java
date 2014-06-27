@@ -69,11 +69,4 @@ public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
     }
   }
   
-  static public class CloseActionListener extends EventListener<UIViewTaskForm> {
-    public void execute(Event<UIViewTaskForm> event) throws Exception {
-      UITeamBPortlet teamBPortlet = event.getSource().getAncestorOfType(UITeamBPortlet.class);
-      teamBPortlet.cancelAction();
-    }
-  }
-
 }

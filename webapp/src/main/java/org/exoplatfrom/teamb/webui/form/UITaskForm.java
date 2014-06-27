@@ -42,23 +42,25 @@ import org.exoplatfrom.teamb.webui.UITeamBPortlet;
     template = "app:/templates/teamb/webui/form/UITaskForm.gtmpl", 
     events = {
       @EventConfig(listeners = UITaskForm.SaveActionListener.class),
+      @EventConfig(listeners = UITaskForm.OnChangeGroupActionListener.class),
       @EventConfig(listeners = UITaskForm.CloseActionListener.class, phase = Phase.DECODE)
   })
 })
 public class UITaskForm extends BaseUIForm implements UIPopupComponent {
 
   private String taskId = "";
-  final public static String FIELD_SUMMARY = "summary".intern() ;
-  final public static String FIELD_CREATED_DATE = "createdDate".intern() ;
-  final public static String FIELD_DUE_DATE = "dueDate".intern() ;
-  final public static String FIELD_COMPLETED_DATE = "completedDate".intern() ;
-  final public static String FIELD_DESCRIPTION = "description".intern() ;
-  final public static String FIELD_PRIORITY = "priority".intern() ;
-  final public static String FIELD_GROUP = "group".intern() ;
-  final public static String FIELD_REPORTER = "reporter".intern() ;
-  final public static String FIELD_ASSIGNEE = "assignee".intern() ;
-  final public static String FIELD_BV= "bv".intern() ;
-  final public static String FIELD_COMPLETNESS = "completness".intern() ;
+
+  final public static String FIELD_SUMMARY        = "summary";
+  final public static String FIELD_CREATED_DATE   = "createdDate";
+  final public static String FIELD_DUE_DATE       = "dueDate";
+  final public static String FIELD_COMPLETED_DATE = "completedDate";
+  final public static String FIELD_DESCRIPTION    = "description";
+  final public static String FIELD_PRIORITY       = "priority";
+  final public static String FIELD_GROUP          = "group";
+  final public static String FIELD_REPORTER       = "reporter";
+  final public static String FIELD_ASSIGNEE       = "assignee";
+  final public static String FIELD_BV             = "bv";
+  final public static String FIELD_COMPLETNESS    = "completness";
   
   public UITaskForm() throws Exception {
     addUIFormInput(new UIFormStringInput(FIELD_SUMMARY, FIELD_SUMMARY, null));
@@ -73,30 +75,30 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     list.add(new SelectItemOption<String>(getLabel("Minor"), "Minor"));
     list.add(new SelectItemOption<String>(getLabel("Trivial"), "Trivial"));
     addUIFormInput(new UIFormSelectBox(FIELD_PRIORITY, FIELD_PRIORITY, list));
-    
-    list = new ArrayList<SelectItemOption<String>>();
-    ConversationState state = ConversationState.getCurrent();
-    Identity identity = state.getIdentity();
-    for (MembershipEntry membership : identity.getMemberships()) {
-      String gr = membership.getGroup();
-      if (gr.startsWith("/spaces")) {
-        String space = gr.replace("/spaces/", "");
-        list.add(new SelectItemOption<String>(space, space));
-      }
-    }
-    addUIFormInput(new UIFormSelectBox(FIELD_GROUP, FIELD_GROUP, list));
+    //
+    UIFormSelectBox selectBox = new UIFormSelectBox(FIELD_GROUP, FIELD_GROUP, null);
+    selectBox.setOnChange("OnChangeGroup");
+    addUIFormInput(selectBox);
     
     addUIFormInput(new UIFormStringInput(FIELD_BV, FIELD_BV, null));
     addUIFormInput(new UIFormDateTimeInput(FIELD_CREATED_DATE, FIELD_CREATED_DATE, null, false));
     addUIFormInput(new UIFormDateTimeInput(FIELD_DUE_DATE, FIELD_DUE_DATE, null, false));
     addUIFormInput(new UIFormDateTimeInput(FIELD_COMPLETED_DATE, FIELD_COMPLETED_DATE, null, false));
     addUIFormInput(new UIFormStringInput(FIELD_COMPLETNESS, FIELD_COMPLETNESS, null));
-    
-    
   }
 
   @Override
   public void activate() {
+    List<SelectItemOption<String>> list = new ArrayList<SelectItemOption<String>>();
+    ConversationState state = ConversationState.getCurrent();
+    Identity identity = state.getIdentity();
+    for (MembershipEntry membership : identity.getMemberships()) {
+      String gr = membership.getGroup();
+      if (gr.startsWith("/spaces")) {
+        list.add(new SelectItemOption<String>(gr, gr));
+      }
+    }
+    getUIFormSelectBox(FIELD_GROUP).setOptions(list);
   }
 
   @Override
@@ -122,11 +124,13 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     }
   }
 
-  static public class CloseActionListener extends EventListener<UITaskForm> {
+  static public class OnChangeGroupActionListener extends EventListener<UITaskForm> {
     public void execute(Event<UITaskForm> event) throws Exception {
+      String currentUser = event.getRequestContext().getRemoteUser();
+      //
       UITeamBPortlet teamBPortlet = event.getSource().getAncestorOfType(UITeamBPortlet.class);
+      
       teamBPortlet.cancelAction();
     }
   }
-
 }

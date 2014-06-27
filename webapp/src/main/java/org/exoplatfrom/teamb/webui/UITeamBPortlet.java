@@ -28,19 +28,28 @@ import org.exoplatform.webui.application.WebuiApplication;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
+import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
+import org.exoplatform.webui.event.Event;
+import org.exoplatform.webui.event.EventListener;
 import org.exoplatfrom.teamb.webui.form.UIPopupAction;
+import org.exoplatfrom.teamb.webui.form.UITaskForm;
+import org.exoplatfrom.teamb.webui.form.UIViewTaskForm;
 
 @ComponentConfig(
    lifecycle = UIApplicationLifecycle.class,
-   template = "app:/templates/teamb/webui/UITeamBPortlet.gtmpl"
+   template = "app:/templates/teamb/webui/UITeamBPortlet.gtmpl", 
+     events = {
+     @EventConfig(listeners = UITeamBPortlet.AddTaskActionListener.class ),
+     @EventConfig(listeners = UITeamBPortlet.EditTaskActionListener.class),
+     @EventConfig(listeners = UITeamBPortlet.ViewTaskActionListener.class )
+   }
 )
 public class UITeamBPortlet extends UIPortletApplication {
 
   public UITeamBPortlet() throws Exception {
-    addChild(UITaskContainer.class, null, "UITaskContainer");
     UIPopupAction popupAction = addChild(UIPopupAction.class, null, "UITeamBPopupAction");
     popupAction.getChild(UIPopupWindow.class).setId("UITeamBPopupWindow");
   }
@@ -50,7 +59,6 @@ public class UITeamBPortlet extends UIPortletApplication {
     PortletMode portletMode = portletReqContext.getApplicationMode();
     if (portletMode == PortletMode.VIEW) {
     } else if (portletMode == PortletMode.EDIT) {
-      return;
     }
     super.processRender(app, context);
   }
@@ -89,4 +97,34 @@ public class UITeamBPortlet extends UIPortletApplication {
     
   }
   
+  static public class AddTaskActionListener extends EventListener<UITeamBPortlet> {
+    public void execute(Event<UITeamBPortlet> event) throws Exception {
+      UITeamBPortlet teamBPortlet = event.getSource();
+      UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
+      popupAction.activate(UITaskForm.class, 700).setId("UIAddTaskForm");
+      event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
+    }
+  }
+
+  static public class EditTaskActionListener extends EventListener<UITeamBPortlet> {
+    public void execute(Event<UITeamBPortlet> event) throws Exception {
+      UITeamBPortlet teamBPortlet = event.getSource();
+      String taskId = event.getRequestContext().getRequestParameter(OBJECTID);
+      UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
+      UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
+      taskForm.setTaskId(taskId).setId("UIEditTaskForm");
+      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
+    }
+  }
+
+  static public class ViewTaskActionListener extends EventListener<UITeamBPortlet> {
+    public void execute(Event<UITeamBPortlet> event) throws Exception {
+      UITeamBPortlet teamBPortlet = event.getSource();
+      String taskId = event.getRequestContext().getRequestParameter(OBJECTID);
+      UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
+      UIViewTaskForm taskForm = popupAction.activate(UIViewTaskForm.class, 800);
+      taskForm.setTaskId(taskId);
+      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
+    }
+  }
 }

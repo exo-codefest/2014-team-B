@@ -16,8 +16,17 @@
  */
 package org.exoplatfrom.teamb.webui.form;
 
+import org.exoplatform.webui.event.Event;
+import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
+import org.exoplatfrom.teamb.webui.UITeamBPortlet;
 
 public class BaseUIForm extends UIForm {
 
+  static public class CloseActionListener extends EventListener<BaseUIForm> {
+    public void execute(Event<BaseUIForm> event) throws Exception {
+      UITeamBPortlet teamBPortlet = event.getSource().getAncestorOfType(UITeamBPortlet.class);
+      teamBPortlet.cancelAction();
+    }
+  }
 }
