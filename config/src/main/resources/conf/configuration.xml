@@ -26,6 +26,7 @@
    xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd"
    xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
    
+
    <external-component-plugins>
     <!-- The full qualified name of the PortalContainerConfig -->
       <target-component>org.exoplatform.container.definition.PortalContainerConfig</target-component>
@@ -58,4 +59,5 @@
          </init-params>
       </component-plugin>
   </external-component-plugins>
+  
 </configuration>

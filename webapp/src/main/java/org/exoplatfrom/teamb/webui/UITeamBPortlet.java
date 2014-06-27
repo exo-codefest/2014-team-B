@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.portlet.PortletMode;
 
+import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
+import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -135,6 +137,24 @@ public class UITeamBPortlet extends UIPortletApplication {
     return tabActive ;
   }
 
+  protected List<Task> getOpenedTasks() {
+    TaskManager tm = CommonsUtils.getService(TaskManager.class);
+    List<Task> openedTasks = tm.getAll();
+    return openedTasks;
+  }
+  
+  protected List<Task> getInProgressTasks() {
+    TaskManager tm = CommonsUtils.getService(TaskManager.class);
+    List<Task> inProgressTasks = tm.getAll();
+    return inProgressTasks;
+  }
+
+  protected List<Task> getDoneTasks() {
+    TaskManager tm = CommonsUtils.getService(TaskManager.class);
+    List<Task> doneTasks = tm.getAll();
+    return doneTasks;
+    
+  }
   public void createCalendarEvent(String currentUser, String summary, Date dueDate, String groupId, String priority) throws Exception{
     CalendarService calendarService = CommonsUtils.getService(CalendarService.class);
     String calendarId = getCalendarByGroupId(groupId).getId();

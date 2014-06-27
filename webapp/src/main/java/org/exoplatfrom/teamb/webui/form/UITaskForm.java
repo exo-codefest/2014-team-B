@@ -20,7 +20,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
+import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
+import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -150,9 +156,32 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       String groupId = uiForm.getUIFormSelectBox(FIELD_GROUP).getValue();
       String summary = uiForm.getUIStringInput(FIELD_SUMMARY).getValue();
       String priority = uiForm.getUIStringInput(FIELD_PRIORITY).getValue();
+      String assignee = uiForm.getUIStringInput(FIELD_ASSIGNEE).getValue();
+      String reporter = uiForm.getUIStringInput(FIELD_REPORTER).getValue();
+      String description = uiForm.getUIFormTextAreaInput(FIELD_DESCRIPTION).getValue();
+      long bv = Long.parseLong(uiForm.getUIStringInput(FIELD_BV).getValue());
       Date dueDate = uiForm.getUIFormDateTimeInput(FIELD_DUE_DATE).getCalendar().getTime();
       UITeamBPortlet teamBPortlet = uiForm.getAncestorOfType(UITeamBPortlet.class);
       teamBPortlet.createCalendarEvent(currentUser, summary, dueDate, groupId, uiForm.getCalendarPriority(priority));
+      
+      //
+      IdentityManager idm = CommonsUtils.getService(IdentityManager.class);
+      Identity reporterIdentity = idm.getOrCreateIdentity(OrganizationIdentityProvider.NAME, reporter, false);
+      String assigneeId = idm.getOrCreateIdentity(OrganizationIdentityProvider.NAME, assignee, false).getId();
+      
+      //
+      TaskManager tm = CommonsUtils.getService(TaskManager.class);
+      Task task = new Task(); 
+      task.setValue(TaskEntity.title, summary);
+      task.setValue(TaskEntity.reporterId, reporterIdentity.getId());
+      task.setValue(TaskEntity.assigneeId, assigneeId);
+      task.setValue(TaskEntity.groupId, groupId);
+      task.setValue(TaskEntity.priority, priority);
+      task.setValue(TaskEntity.estimation, dueDate.getTime() + "");
+      task.setValue(TaskEntity.businessValue, bv);
+      task.setValue(TaskEntity.description, description);
+      tm.save(reporterIdentity, task);
+      
       teamBPortlet.cancelAction();
     }
   }

@@ -1,5 +1,8 @@
 <%
-String summaryLabel       = _ctx.appRes("UIViewTaskForm.label.Summary");
+import org.exoplatform.addons.codefest.team_b.core.model.Task;
+import org.exoplatfrom.teamb.webui.Utils;
+
+String summaryLabel      = _ctx.appRes("UITeamBPopupWindow.title.Summary");
 String reporterLabel      = _ctx.appRes("UIViewTaskForm.label.Reporter");
 String priorityLabel      = _ctx.appRes("UIViewTaskForm.label.Priority");
 String bvLabel            = _ctx.appRes("UIViewTaskForm.label.BV");
@@ -16,27 +19,30 @@ String editLabel          = _ctx.appRes("UIViewTaskForm.label.Edit");
 String cancelLabel        = _ctx.appRes("UIViewTaskForm.label.Cancel");
 String saveLabel          = _ctx.appRes("UITaskForm.action.Save");
 String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
+Task task = uicomponent.getTask();
 %>
-<div class="uiTaskForm">	
-	<% uiform.begin(); %>	
+<div class="uiTaskForm">  
+  <% uiform.begin(); %> 
+  <% if (task != null) { %>
   <div id="taskViewBlock" class="form-horizontal">
     <table>
       <tr>
         <td>
           <div class="control-group">
-           <div class="control-label"><strong>$summaryLabel</strong></div>
+           <div class="control-label" >$summaryLabel:</div>
            <div class="controls">
-             
+             <%=task.get(Utils.SUMMARY)%>
            </div>
           </div>
         </td>
-        <td></td>
       </tr>
+      
       <tr>
         <td>
           <div class="control-group">
            <div class="control-label" >$reporterLabel:</div>
            <div class="controls">
+             <%=task.get(Utils.REPORTER)%>
            </div>
           </div>
         </td>
@@ -44,6 +50,7 @@ String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
           <div class="control-group">
            <div class="control-label" >$assigneeLabel:</div>
            <div class="controls">
+             <%=task.get(Utils.ASSIGNEE)%>
            </div>
           </div>
         </td>
@@ -53,6 +60,7 @@ String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
           <div class="control-group">
            <div class="control-label" >$priorityLabel:</div>
            <div class="controls">
+             <%=task.get(Utils.PRIORITY)%>
            </div>
           </div>
         </td>
@@ -60,6 +68,7 @@ String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
           <div class="control-group">
            <div class="control-label" >$statusLabel:</div>
            <div class="controls">
+             <%=task.get(Utils.STATUS)%>
            </div>
           </div>
         </td>
@@ -69,6 +78,7 @@ String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
           <div class="control-group">
            <div class="control-label" >$bvLabel:</div>
            <div class="controls">
+             <%=task.get(Utils.BV)%>
            </div>
           </div>
         </td>
@@ -76,6 +86,7 @@ String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
           <div class="control-group">
            <div class="control-label" >$dueDateLabel:</div>
            <div class="controls">
+             <%=task.get(Utils.DUE_DATE)%>
            </div>
           </div>
         </td>
@@ -85,6 +96,7 @@ String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
           <div class="control-group">
            <div class="control-label" >$createDateLabel:</div>
            <div class="controls">
+             <%=task.get(Utils.CREATED_DATE)%>
            </div>
           </div>
         </td>
@@ -92,6 +104,7 @@ String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
           <div class="control-group">
            <div class="control-label" >$completenessLabel:</div>
            <div class="controls">
+             <%=task.get(Utils.COMPLETENESS)%>
            </div>
           </div>
         </td>
@@ -101,6 +114,7 @@ String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
           <div class="control-group">
            <div class="control-label" >$groupLabel:</div>
            <div class="controls">
+             <%=task.get(Utils.GROUP)%>
            </div>
           </div>
         </td>
@@ -108,6 +122,7 @@ String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
           <div class="control-group">
            <div class="control-label" >$completedDateLabel:</div>
            <div class="controls">
+             <%=task.get(Utils.COMPLETED_DATE)%>
            </div>
           </div>
         </td>
@@ -117,6 +132,7 @@ String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
           <div class="control-group">
            <div class="control-label" >$descriptionLabel:</div>
            <div class="controls">
+             <%=task.get(Utils.DESCRIPTION)%>
            </div>
           </div>
         </td>
@@ -126,6 +142,7 @@ String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
           <div class="control-group">
            <div class="control-label" >$noteLabel:</div>
            <div class="controls">
+             <%=task.get(Utils.NOTE)%>
            </div>
           </div>
         </td>
@@ -135,6 +152,9 @@ String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
   <div class="uiAction">
     <button onclick="<%=uicomponent.event("EditTask", "the taskId")%>" class="btn" type="button">$editLabel</button>
     <button onclick="<%=uicomponent.event("Close")%>" class="btn" type="button">$closeLabel</button>
-	</div>
-	<%uiform.end();%>
+  </div>
+  <% } else { %>
+  <%=_ctx.appRes("UIViewTaskForm.label.ErrorLoadingTask")%>
+  <% } %>
+  <%uiform.end();%>
 </div>

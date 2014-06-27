@@ -16,6 +16,9 @@
  */
 package org.exoplatfrom.teamb.webui.form;
 
+import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
+import org.exoplatform.addons.codefest.team_b.core.model.Task;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -25,6 +28,7 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatfrom.teamb.webui.UITeamBPortlet;
+import org.exoplatfrom.teamb.webui.Utils;
 
 @ComponentConfigs({
   @ComponentConfig(lifecycle = UIFormLifecycle.class, 
@@ -37,7 +41,7 @@ import org.exoplatfrom.teamb.webui.UITeamBPortlet;
 public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
 
   private String taskId;
-
+  
   public UIViewTaskForm() {
   }
 
@@ -57,6 +61,11 @@ public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
     this.taskId = taskId;
   }
 
+  protected Task getTask() {
+    TaskManager tm = CommonsUtils.getService(TaskManager.class);
+    return Utils.fillPropertiesTask(tm.get(this.taskId));
+  }
+  
   static public class EditTaskActionListener extends EventListener<UIViewTaskForm> {
     public void execute(Event<UIViewTaskForm> event) throws Exception {
       UITeamBPortlet teamBPortlet = event.getSource().getAncestorOfType(UITeamBPortlet.class);

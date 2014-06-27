@@ -1,3 +1,9 @@
+<%
+
+import org.exoplatform.addons.codefest.team_b.core.model.Task;
+import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
+
+%>
 <div class="uiTeamBPortlet" id="$uicomponent.id">
 <div><h1><%=_ctx.appRes("UITeamBPortlet.label.Welcome")%></h1></div>
 <%
@@ -50,19 +56,23 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 				<tbody>
 					<tr>
 						<%
-								String [] opens = ["Benjamin Mestrallet (CEO)", "Veronika Mestrallet (CFO)", "François Moron (GM)", "Oualid Chaker (GM)",
-								                   "Thien Nga Ngo Rocaboy (GM)", "Frederic Drouet (VP Engineering)", 
-								                   "Patrice Lamarque (VP Product)", "Charles Magral (VP GSS)", "Benjamin Paillereau (VP Presales)"];
-							  String[] inprogress = ["task 0", "task 1", "task 2", "task 3"];
-							  String[] dones = ["issue 0", "issue 1", "issue 2", "issue 3"];
+								//String [] opens = ["Benjamin Mestrallet (CEO)", "Veronika Mestrallet (CFO)", "François Moron (GM)", "Oualid Chaker (GM)",
+								  //                 "Thien Nga Ngo Rocaboy (GM)", "Frederic Drouet (VP Engineering)", 
+								    //               "Patrice Lamarque (VP Product)", "Charles Magral (VP GSS)", "Benjamin Paillereau (VP Presales)"];
+							  //String[] inprogress = ["task 0", "task 1", "task 2", "task 3"];
+							  //String[] dones = ["issue 0", "issue 1", "issue 2", "issue 3"];
+							  
+							  def opens = uicomponent.getOpenedTasks();
+							  def inprogress = uicomponent.getOpenedTasks();
+							  def dones = uicomponent.getOpenedTasks();
 						%>
 						<td>
 							<ul>
 							<%
-								for(String s in opens) {
+								for(Task task in opens) {
 							%>
 								<li class="clearfix effect-hover">
-									<a class="ellipsis taskTitle" rel="tooltip" data-placement="bottom" title="$s" href="javascript:void(0);" onclick="<%=uicomponent.event("ViewTask", s)%>">$s</a>
+									<a class="ellipsis taskTitle" rel="tooltip" data-placement="bottom" title="${task.get(TaskEntity.title)}" href="javascript:void(0);" onclick="<%=uicomponent.event("ViewTask", task.get(TaskEntity.id))%>">${task.get(TaskEntity.title) }</a>
 									<a class="item-hover actionIcon" href="javascript:void(0);" onclick="<%=uicomponent.event("EditTask", s)%>"><i class="uiIconEdit uiIconLightGray"></i></a>
 									<a class="item-hover actionIcon" href="javascript:void(0);" onclick="<%=uicomponent.event("RemoveTask", s)%>"><i class="uiIconDelete uiIconLightGray"></i></a>
 								</li>
@@ -72,10 +82,10 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 						<td>
 							<ul>
 							<%
-								for(String s in inprogress) {
+							for(Task task in inprogress) {
 							%>
 								<li class="clearfix effect-hover">
-									<a class="ellipsis taskTitle" rel="tooltip" data-placement="bottom" title="$s" href="javascript:void(0);" onclick="<%=uicomponent.event("ViewTask", s)%>">$s</a>
+									<a class="ellipsis taskTitle" rel="tooltip" data-placement="bottom" title="${task.get(TaskEntity.title)}" href="javascript:void(0);" onclick="<%=uicomponent.event("ViewTask", task.get(TaskEntity.id))%>">${task.get(TaskEntity.title) }</a>
 									<a class="item-hover actionIcon" href="javascript:void(0);" onclick="<%=uicomponent.event("EditTask", s)%>"><i class="uiIconEdit uiIconLightGray"></i></a>
 									<a class="item-hover actionIcon" href="javascript:void(0);" onclick="<%=uicomponent.event("RemoveTask", s)%>"><i class="uiIconDelete uiIconLightGray"></i></a>
 								</li>
@@ -85,10 +95,10 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 						<td>
 							<ul>
 							<%
-								for(String s in dones) {
+							for(Task task in dones) {
 							%>
 								<li class="clearfix effect-hover">
-									<a class="ellipsis taskTitle" rel="tooltip" data-placement="bottom" title="$s" href="javascript:void(0);" onclick="<%=uicomponent.event("ViewTask", s)%>">$s</a>
+									<a class="ellipsis taskTitle" rel="tooltip" data-placement="bottom" title="${task.get(TaskEntity.title)}" href="javascript:void(0);" onclick="<%=uicomponent.event("ViewTask", task.get(TaskEntity.id))%>">${task.get(TaskEntity.title) }</a>
 									<a class="item-hover actionIcon" href="javascript:void(0);" onclick="<%=uicomponent.event("EditTask", s)%>"><i class="uiIconEdit uiIconLightGray"></i></a>
 									<a class="item-hover actionIcon" href="javascript:void(0);" onclick="<%=uicomponent.event("RemoveTask", s)%>"><i class="uiIconDelete uiIconLightGray"></i></a>
 								</li>
