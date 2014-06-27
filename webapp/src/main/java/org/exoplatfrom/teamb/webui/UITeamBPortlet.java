@@ -56,7 +56,8 @@ import org.exoplatfrom.teamb.webui.form.UIViewTaskForm;
 public class UITeamBPortlet extends UIPortletApplication {
   
   public static final String DEFAULT_VIEW = "personal";
-  private String groupToViewId = DEFAULT_VIEW; 
+  private String groupToViewId = DEFAULT_VIEW;
+  private String tabActive = "Day"; 
   
   public UITeamBPortlet() throws Exception {
     UIPopupAction popupAction = addChild(UIPopupAction.class, null, "UITeamBPopupAction");
@@ -106,6 +107,10 @@ public class UITeamBPortlet extends UIPortletApplication {
   public List getOpen() {
     List list = new ArrayList();
     return list;
+  }
+  
+  protected String getTabActive() {
+    return tabActive ;
   }
 
   public void createCalendarEvent(String currentUser, String category, String summary, String type, Date from, Date to) throws Exception{
@@ -172,6 +177,7 @@ public class UITeamBPortlet extends UIPortletApplication {
   static public class ViewMonthActionListener extends EventListener<UITeamBPortlet> {
     public void execute(Event<UITeamBPortlet> event) throws Exception {
       UITeamBPortlet teamBPortlet = event.getSource();
+      teamBPortlet.tabActive = "Month";
       event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
     }
   }
@@ -179,6 +185,7 @@ public class UITeamBPortlet extends UIPortletApplication {
   static public class ViewWeekActionListener extends EventListener<UITeamBPortlet> {
     public void execute(Event<UITeamBPortlet> event) throws Exception {
       UITeamBPortlet teamBPortlet = event.getSource();
+      teamBPortlet.tabActive = "Week";
       event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
     }
   }
@@ -186,6 +193,7 @@ public class UITeamBPortlet extends UIPortletApplication {
   static public class ViewDayActionListener extends EventListener<UITeamBPortlet> {
     public void execute(Event<UITeamBPortlet> event) throws Exception {
       UITeamBPortlet teamBPortlet = event.getSource();
+      teamBPortlet.tabActive = "Day";
       event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
     }
   }

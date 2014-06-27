@@ -23,9 +23,17 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 			</div>
 			<div class="alignBtnGroup">
 				<ul class="btn-group">
-					<li class="btn"><a onclick="<%=uicomponent.event("ViewDay")%>" href="javascript:void(0);">Day</a></li>
-					<li class="btn"><a onclick="<%=uicomponent.event("ViewWeek")%>" href="javascript:void(0);">Week</a></li>
-					<li class="btn"><a onclick="<%=uicomponent.event("ViewMonth")%>" href="javascript:void(0);">Month</a></li>
+				<%
+				for (n in ["Day", "Week", "Month"]) {
+				  String active = "";
+				  if(n.equals(uicomponent.getTabActive())) {
+				    active = " active";
+				  }
+				%>
+					<li class="btn${active}"><a onclick="<%=uicomponent.event("View" + n)%>" href="javascript:void(0);"><%=_ctx.appRes("UITeamBPortlet.label." + n)%></a></li>
+				<%
+				}
+				%>
 				</ul>
 			</div>
 		</div>
@@ -34,9 +42,9 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 			<table class="uiGrid table rounded-corners-bottom table-striped">
 				<thead>
 					<tr>
-						<th style="width:30%;" class="center"><%=_ctx.appRes("UITeamBPortlet.label.Open");%></th>
-						<th style="width:30%;" class="center"><%=_ctx.appRes("UITeamBPortlet.label.InProgress");%></th>
-						<th style="width:30%;" class="center"><%=_ctx.appRes("UITeamBPortlet.label.Done");%></th>
+						<th style="width:30%;" class="center"><%=_ctx.appRes("UITeamBPortlet.label.Open")%></th>
+						<th style="width:30%;" class="center"><%=_ctx.appRes("UITeamBPortlet.label.InProgress")%></th>
+						<th style="width:30%;" class="center"><%=_ctx.appRes("UITeamBPortlet.label.Done")%></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -92,7 +100,7 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 				<tfoot>
 					<tr>
 						<td colspan="3" style="border-top: 1px solid #cccccc">
-							<div>sssssssssssssssssssssssssss</div>
+							<div>Tasks time line.</div>
 							<ul>
 								<li></li>
 							</ul>
