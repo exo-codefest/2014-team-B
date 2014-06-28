@@ -216,7 +216,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     return this;
   }
   
-  private String getCalendarPriority(String priority) {
+  private static String getCalendarPriority(String priority) {
     if ("Blocker".equals(priority) || "Critical".equals(priority)) {
       return "High";
     } else if ("Minor".equals(priority) || "Trivial".equals(priority)) {
@@ -252,7 +252,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       Task task = uiForm.task;
       if (uiForm.task == null) {
         CalendarEvent calendarEvent = teamBPortlet.createCalendarEvent(currentUser, summary, dueDate.getTime(),
-                                                                       groupId, uiForm.getCalendarPriority(priority));
+                                                                       groupId, getCalendarPriority(priority));
         task = new Task();
         task.setTaskId(calendarEvent.getId());
         task.setValue(TaskEntity.reporterId, currentIdentity.getId());
@@ -263,7 +263,8 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
         task.setValue(TaskEntity.updatedTime, currentTime.getTimeInMillis());
         task.setValue(TaskEntity.status, Task.STATUS.OPEN.getName());
       } else {
-        teamBPortlet.updateCalendarEvent(currentUser, summary, dueDate.getTime(), groupId, priority, uiForm.task.getValue(TaskEntity.taskId));
+        teamBPortlet.updateCalendarEvent(currentUser, summary, dueDate.getTime(), groupId,
+                                         getCalendarPriority(priority), uiForm.task.getValue(TaskEntity.taskId));
       }
       //
       String assigneeId = idm.getOrCreateIdentity(OrganizationIdentityProvider.NAME, assignee, false).getId();

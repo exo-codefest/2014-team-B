@@ -371,6 +371,7 @@ public class UITeamBPortlet extends UIPortletApplication {
         ignoreUpdate = false;
         UIPopupAction popupAction = event.getSource().getChild(UIPopupAction.class);
         UILogWork taskForm = popupAction.activate(UILogWork.class, 650);
+        taskForm.setId("UILogWork");
         taskForm.setTaskId(taskId);
         context.addUIComponentToUpdateByAjax(popupAction);
       }

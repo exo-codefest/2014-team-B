@@ -7,8 +7,8 @@
           if(field.isRendered()) {
       %>
             <div class="control-group">
-              <%fieldName = uicomponent.getLabel(field.getName());%>
-              <%if(!fieldName.equals(uicomponent.getId()) && fieldName != null && fieldName.length() > 0) { %>                        
+              <%fieldName = uiform.getLabel(field.getName());%>
+              <%if(!fieldName.equals(uiform.getId()) && fieldName != null && fieldName.length() > 0) { %>                        
                 <% if(field.getName().equals("upload") == false) {%>
                 <div class="control-label">
                   <label for="<%=field.getId()%>"><%=fieldName%>:</label>
