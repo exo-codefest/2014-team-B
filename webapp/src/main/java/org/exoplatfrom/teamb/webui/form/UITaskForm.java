@@ -73,7 +73,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
   final public static String FIELD_REPORTER       = "Reporter";
   final public static String FIELD_ASSIGNEE       = "Assignee";
   final public static String FIELD_BV             = "BV";
-  final public static String FIELD_COMPLETENESS   = "Completeness";
+  final public static String FIELD_ESTIMATION     = "estimation";
   
   public UITaskForm() throws Exception {
     addUIFormInput(new UIFormStringInput(FIELD_SUMMARY, FIELD_SUMMARY, null).addValidator(MandatoryValidator.class));
@@ -101,7 +101,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     addUIFormInput(new UIFormStringInput(FIELD_BV, FIELD_BV, null));
     addUIFormInput(new UIFormDateTimeInput(FIELD_DUE_DATE, FIELD_DUE_DATE, null, false));
     addUIFormInput(new UIFormDateTimeInput(FIELD_COMPLETED_DATE, FIELD_COMPLETED_DATE, null, false));
-    addUIFormInput(new UIFormStringInput(FIELD_COMPLETENESS, FIELD_COMPLETENESS, null));
+    addUIFormInput(new UIFormStringInput(FIELD_ESTIMATION, FIELD_ESTIMATION, null));
     
     setActions(new String[]{"Save", "Close"});
   }
@@ -179,18 +179,20 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
       Calendar calendar = Calendar.getInstance();
       
-      if (this.task.getValue(TaskEntity.createdTime) != null) {  
+      getUIStringInput(FIELD_ESTIMATION).setValue(String.valueOf(this.task.getValue(TaskEntity.completeness)));
+      
+      // thoi han ket thuc
+      if (this.task.getValue(TaskEntity.estimation) != null) {  
         System.out.println(this.task.getValue(TaskEntity.createdTime) + " : " + formatter.format(calendar.getTime()));
-        calendar.setTimeInMillis(this.task.getValue(TaskEntity.createdTime));
+        calendar.setTimeInMillis(this.task.getValue(TaskEntity.resolvedTime));
         getUIFormDateTimeInput(FIELD_DUE_DATE).setValue(formatter.format(calendar.getTime()));
       }
-      
-      if (this.task.getValue(TaskEntity.createdTime) != null) {
+      // thoi gian con lai
+      if (this.task.getValue(TaskEntity.remaining) != null) {
         calendar.setTimeInMillis(this.task.getValue(TaskEntity.createdTime));
         getUIFormDateTimeInput(FIELD_COMPLETED_DATE).setValue(formatter.format(calendar.getTime()));
       }
      
-      getUIStringInput(FIELD_COMPLETENESS).setValue(this.task.getValue(TaskEntity.workLogged));
     }
   }
 

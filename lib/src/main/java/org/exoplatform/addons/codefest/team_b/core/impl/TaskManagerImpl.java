@@ -35,6 +35,8 @@ import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.Task
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.type;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.updatedTime;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.workLogged;
+import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.completeness;
+import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.dueDateTime;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -137,8 +139,10 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     entity.setResolution(task.getValue(resolution));
     entity.setDescription(task.getValue(description));
     entity.setCreatedTime(task.getValue(createdTime));
+    entity.setCompleteness(task.getValue(completeness));
     entity.setUpdatedTime(task.getValue(updatedTime));
     entity.setResolvedTime(task.getValue(resolvedTime));
+    entity.setDueDateTime(task.getValue(dueDateTime));
     entity.setEstimation(task.getValue(estimation));
     entity.setRemaining(task.getValue(remaining));
     entity.setWorkLogged(task.getValue(workLogged));
@@ -166,9 +170,11 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     task.setValue(status, entity.getStatus());
     task.setValue(resolution, entity.getResolution());
     task.setValue(description, entity.getDescription());
+    task.setValue(completeness, entity.getCompleteness());
     task.setValue(createdTime, entity.getCreatedTime());
     task.setValue(updatedTime, entity.getUpdatedTime());
     task.setValue(resolvedTime, entity.getResolvedTime());
+    task.setValue(dueDateTime, entity.getDueDateTime());
     task.setValue(estimation, entity.getEstimation());
     task.setValue(remaining, entity.getRemaining());
     task.setValue(workLogged, entity.getWorkLogged());
@@ -276,10 +282,12 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     whereExpression.endGroup();
 
     //
-    whereExpression.and().startGroup();
-    whereExpression.greaterEq(TaskEntity.updatedTime, filter.timeview().getFrom().getTimeInMillis());
-    whereExpression.and().lessEq(TaskEntity.updatedTime, filter.timeview().getTo().getTimeInMillis());
-    whereExpression.endGroup();
+    if(filter.withDate() != null) {
+      whereExpression.and().startGroup();
+      whereExpression.greaterEq(filter.withDate(), filter.timeview().getFrom().getTimeInMillis());
+      whereExpression.and().lessEq(filter.withDate(), filter.timeview().getTo().getTimeInMillis());
+      whereExpression.endGroup();
+    }
 
     LOG.info("load-filter::query = " + whereExpression.toString());
     builder.where(whereExpression.toString());

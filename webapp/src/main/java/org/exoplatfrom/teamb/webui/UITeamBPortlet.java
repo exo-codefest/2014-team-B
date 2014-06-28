@@ -25,6 +25,7 @@ import javax.portlet.PortletMode;
 
 import org.exoplatform.addons.codefest.team_b.core.api.TaskListAccess;
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
+import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter;
 import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter.TIMEVIEW;
@@ -133,6 +134,7 @@ public class UITeamBPortlet extends UIPortletApplication {
 
   protected List<Task> getOpenedTasks() throws Exception {
     TaskFilter filter = commonTaskFilter().status(Task.STATUS.OPEN);
+    filter.withDate(TaskEntity.dueDateTime);
 
     TaskManager tm = CommonsUtils.getService(TaskManager.class);
     List<Task> openedTasks = Arrays.asList(((TaskListAccess) tm.find(filter)).getAll());
@@ -152,6 +154,7 @@ public class UITeamBPortlet extends UIPortletApplication {
 
   protected List<Task> getInProgressTasks() throws Exception {
     TaskFilter filter = commonTaskFilter().status(Task.STATUS.IN_PROGRESS);
+    filter.withDate(TaskEntity.updatedTime);
 
     TaskManager tm = CommonsUtils.getService(TaskManager.class);
     ListAccess<Task> listAccess = tm.find(filter);
@@ -161,13 +164,14 @@ public class UITeamBPortlet extends UIPortletApplication {
 
   protected List<Task> getDoneTasks() throws Exception {
     TaskFilter filter = commonTaskFilter().status(Task.STATUS.RESOLVED);
+    filter.withDate(TaskEntity.resolvedTime);
 
     TaskManager tm = CommonsUtils.getService(TaskManager.class);
     List<Task> doneTasks = Arrays.asList(((TaskListAccess) tm.find(filter)).getAll());
     return doneTasks;
   }
 
-  public void createCalendarEvent(String currentUser, String summary, Date dueDate, String groupId, String priority) throws Exception{
+  public EventCategory createCalendarEvent(String currentUser, String summary, Date dueDate, String groupId, String priority) throws Exception{
     CalendarService calendarService = CommonsUtils.getService(CalendarService.class);
     String calendarId = getCalendarByGroupId(groupId).getId();
     //
@@ -187,7 +191,8 @@ public class UITeamBPortlet extends UIPortletApplication {
     calendarEvent.setToDateTime(dueDate);
     
     calendarService.savePublicEvent(calendarId, calendarEvent, true) ;          
-    
+    //
+    return eventCategory;
   }
   
   private Calendar getCalendarByGroupId(String groupId) throws Exception {

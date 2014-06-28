@@ -123,6 +123,9 @@ public class Task extends HashMap<String, Object> {
     }
   }
   
+  public Task() {
+    
+  }
   /**
    * 
    */

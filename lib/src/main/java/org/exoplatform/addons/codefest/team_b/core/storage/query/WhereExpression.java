@@ -69,14 +69,14 @@ public class WhereExpression {
   public <T> WhereExpression lesser(PropertyLiteralExpression<T> property, T value) {
     checkParam(property, value);
 
-    getStringBuilder().append(String.format("%s < %s ", property.getName(), value));
+    getStringBuilder().append(String.format("%s < %s ", property.getName(), espace(property, value)));
     return this;
   }
 
   public <T> WhereExpression lessEq(PropertyLiteralExpression<T> property, T value) {
     checkParam(property, value);
 
-    getStringBuilder().append(String.format("%s <= %s ", property.getName(), value));
+    getStringBuilder().append(String.format("%s <= %s ", property.getName(), espace(property, value)));
     return this;
   }
 
@@ -90,7 +90,7 @@ public class WhereExpression {
   public <T> WhereExpression greaterEq(PropertyLiteralExpression<T> property, T value) {
     checkParam(property, value);
 
-    getStringBuilder().append(String.format("%s >= '%s' ", property.getName(), value));
+    getStringBuilder().append(String.format("%s >= %s ", property.getName(), espace(property, value)));
     return this;
   }
 

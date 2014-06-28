@@ -19,6 +19,7 @@ package org.exoplatform.addons.codefest.team_b.core.model;
 import java.util.Calendar;
 
 import org.exoplatform.addons.codefest.team_b.core.model.Task.STATUS;
+import org.exoplatform.addons.codefest.team_b.core.storage.PropertyLiteralExpression;
 
 /**
  * Created by The eXo Platform SAS
@@ -91,6 +92,8 @@ public class TaskFilter {
   private String groupId;
   private String assignee;
   
+  private PropertyLiteralExpression<Long> withDate = null;
+  
   public TaskFilter() {
   }
   
@@ -130,5 +133,13 @@ public class TaskFilter {
     return this.assignee;
   }
   
-
+  public TaskFilter withDate(PropertyLiteralExpression<Long> withDate) {
+    this.withDate = withDate;
+    return this;
+  }
+  
+  public PropertyLiteralExpression<Long> withDate() {
+    return this.withDate;
+  }
+  
 }

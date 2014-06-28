@@ -157,31 +157,43 @@ public abstract class TaskEntity implements NamedEntity {
   public static final PropertyLiteralExpression<Long> createdTime =
     new PropertyLiteralExpression<Long>(Long.class, "exo:createdTime", "createdDate");
   
-  @Property(name = "exo:updatedTime")
+  @Property(name = "exo:completeness")// % completeness
+  public abstract Long getCompleteness();
+  public abstract void setCompleteness(Long completeness);
+  public static final PropertyLiteralExpression<Long> completeness =
+      new PropertyLiteralExpression<Long>(Long.class, "exo:completeness", "completeness");
+  
+  @Property(name = "exo:updatedTime") // auto update if edit
   public abstract Long getUpdatedTime();
   public abstract void setUpdatedTime(Long updatedTime);
   public static final PropertyLiteralExpression<Long> updatedTime =
     new PropertyLiteralExpression<Long>(Long.class, "exo:updatedTime", "updatedTime");
   
-  @Property(name = "exo:resolvedTime")
-  public abstract Integer getResolvedTime();
-  public abstract void setResolvedTime(Integer resolvedTime);
-  public static final PropertyLiteralExpression<Integer> resolvedTime =
-    new PropertyLiteralExpression<Integer>(Integer.class, "exo:resolvedTime", "resolvedTime");
+  @Property(name = "exo:resolvedTime") // update when done
+  public abstract Long getResolvedTime();
+  public abstract void setResolvedTime(Long resolvedTime);
+  public static final PropertyLiteralExpression<Long> resolvedTime =
+    new PropertyLiteralExpression<Long>(Long.class, "exo:resolvedTime", "resolvedTime");
+
+  @Property(name = "exo:dueDateTime") // due date time
+  public abstract Long getDueDateTime();
+  public abstract void setDueDateTime(Long dueDateTime);
+  public static final PropertyLiteralExpression<Long> dueDateTime =
+      new PropertyLiteralExpression<Long>(Long.class, "exo:dueDateTime", "dueDateTime");
   
-  @Property(name = "exo:estimation")
+  @Property(name = "exo:estimation") // the time estimation 1w 1d 1h 1m
   public abstract String getEstimation();
   public abstract void setEstimation(String estimation);
   public static final PropertyLiteralExpression<String> estimation =
     new PropertyLiteralExpression<String>(String.class, "exo:estimation", "estimation");
   
-  @Property(name = "exo:remaining")
+  @Property(name = "exo:remaining") // the time remaining  1w 1d 1h 1m
   public abstract String getRemaining();
   public abstract void setRemaining(String remanining);
   public static final PropertyLiteralExpression<String> remaining =
     new PropertyLiteralExpression<String>(String.class, "exo:remaining", "remaining");
   
-  @Property(name = "exo:workLogged")
+  @Property(name = "exo:workLogged") // the time work logged  1w 1d 1h 1m
   public abstract String getWorkLogged();
   public abstract void setWorkLogged(String workLogged);
   public static final PropertyLiteralExpression<String> workLogged =
