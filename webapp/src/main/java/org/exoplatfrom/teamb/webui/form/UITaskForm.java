@@ -23,6 +23,7 @@ import java.util.List;
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
+import org.exoplatform.addons.codefest.team_b.core.utils.TaskManagerUtils;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
@@ -43,6 +44,7 @@ import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatfrom.teamb.webui.UITeamBPortlet;
+import org.exoplatfrom.teamb.webui.Utils;
 
 @ComponentConfigs({
   @ComponentConfig(lifecycle = UIFormLifecycle.class, 
@@ -81,10 +83,14 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     list.add(new SelectItemOption<String>(getLabel("Trivial"), "Trivial"));
     addUIFormInput(new UIFormSelectBox(FIELD_PRIORITY, FIELD_PRIORITY, list));
     //
+    
+    
     addUIFormInput(new UIFormStringInput(FIELD_REPORTER, FIELD_REPORTER, null));
-    addUIFormInput(new UIFormSelectBox(FIELD_ASSIGNEE, FIELD_ASSIGNEE, null));
+    List<SelectItemOption<String>> assigneeList = new ArrayList<SelectItemOption<String>>();
+    addUIFormInput(new UIFormSelectBox(FIELD_ASSIGNEE, FIELD_ASSIGNEE, assigneeList));
     //
-    UIFormSelectBox selectBox = new UIFormSelectBox(FIELD_GROUP, FIELD_GROUP, null);
+    List<SelectItemOption<String>> groupList = new ArrayList<SelectItemOption<String>>();
+    UIFormSelectBox selectBox = new UIFormSelectBox(FIELD_GROUP, FIELD_GROUP, groupList);
     selectBox.setOnChange("OnChangeGroup");
     addUIFormInput(selectBox);
     
@@ -102,6 +108,38 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
   
   public void setGroups(List<SelectItemOption<String>> list) {
     getUIFormSelectBox(FIELD_GROUP).setOptions(list);
+  }
+  
+  public void initForm() {
+    Task selectedTask = TaskManagerUtils.getTaskById(this.task.getValue(TaskEntity.id));
+    if (selectedTask != null) {
+      
+      //
+      getUIStringInput(FIELD_SUMMARY).setValue(selectedTask.getValue(TaskEntity.title));
+      getUIFormTextAreaInput(FIELD_DESCRIPTION).setValue(selectedTask.getValue(TaskEntity.description));
+      
+      getUIFormSelectBox(FIELD_PRIORITY).setSelectedValues(new String[] {selectedTask.getValue(TaskEntity.priority)});
+      
+      String reporterId = selectedTask.getValue(TaskEntity.reporterId);
+      Identity reporterIdentity = Utils.getIdentityById(reporterId);
+      
+      getUIStringInput(FIELD_REPORTER).setValue(reporterIdentity.getProfile().getFullName());
+      getUIStringInput(FIELD_REPORTER).setDisabled(true);
+      
+      getUIFormSelectBox(FIELD_ASSIGNEE).setSelectedValues(new String[] {selectedTask.getValue(TaskEntity.assigneeId)});
+      
+      //
+      getUIFormSelectBox(FIELD_GROUP).setSelectedValues(new String[] {selectedTask.getValue(TaskEntity.groupId)});
+      
+      //
+      
+      getUIStringInput(FIELD_BV).setValue(selectedTask.getValue(TaskEntity.businessValue) + "");
+      
+      getUIFormDateTimeInput(FIELD_DUE_DATE).setValue(selectedTask.getValue(TaskEntity.estimation));
+      getUIFormDateTimeInput(FIELD_COMPLETED_DATE).setValue(selectedTask.getValue(TaskEntity.resolvedTime) + "");
+     
+      getUIStringInput(FIELD_BV).setValue(selectedTask.getValue(TaskEntity.workLogged));
+    }
   }
   
   public void initForm(String currentUser) {
@@ -123,6 +161,11 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       getUIFormSelectBox(FIELD_ASSIGNEE).setOptions(list);
       getUIFormSelectBox(FIELD_ASSIGNEE).setDisabled(true);
     }
+    
+    //
+    getUIStringInput(FIELD_SUMMARY).setValue(this.task.getValue(TaskEntity.title));
+    getUIFormTextAreaInput(FIELD_DESCRIPTION).setValue(this.task.getValue(TaskEntity.description));
+    getUIStringInput(FIELD_BV).setValue(this.task.getValue(TaskEntity.businessValue) + "");
   }
 
   @Override

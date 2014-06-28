@@ -136,5 +136,10 @@ public class TaskManagerUtils {
     TaskManager manager = CommonsUtils.getService(TaskManager.class);
     return manager.getAll();
   }
+  
+  public static Task getTaskById(String id) {
+    TaskManager manager = CommonsUtils.getService(TaskManager.class);
+    return manager.get(id);
+  }
 
 }

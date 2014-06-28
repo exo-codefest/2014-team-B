@@ -252,7 +252,9 @@ public class UITeamBPortlet extends UIPortletApplication {
       
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
       UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
-      taskForm.setTask(org.exoplatfrom.teamb.webui.Utils.fillPropertiesTask(task)).setId("UIEditTaskForm");
+//      taskForm.setTask(org.exoplatfrom.teamb.webui.Utils.fillPropertiesTask(task)).setId("UIEditTaskForm");
+      taskForm.setTask(task);
+      taskForm.initForm();
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }
   }

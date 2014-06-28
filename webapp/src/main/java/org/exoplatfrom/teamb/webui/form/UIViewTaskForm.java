@@ -68,6 +68,7 @@ public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
       UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
       taskForm.setTask(task).setId("UIEditTaskForm");
+      taskForm.initForm();
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }
   }

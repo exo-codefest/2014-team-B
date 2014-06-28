@@ -25,6 +25,7 @@ import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
 public class Utils {
+  public static final String ID = "id";
   public static final String SUMMARY = "Summary";
   public static final String REPORTER = "Reporter";
   public static final String ASSIGNEE = "Assignee";
@@ -56,6 +57,7 @@ public class Utils {
     Space sp = ss.getSpaceByGroupId(task.getValue(TaskEntity.groupId));
     
     Task t = new Task();
+    t.put(ID, task.getValue(TaskEntity.id));
     t.put(SUMMARY, task.getValue(TaskEntity.title));
     t.put(REPORTER, reporter.getProfile().getFullName());
     t.put(ASSIGNEE, assignee.getProfile().getFullName());
@@ -73,4 +75,8 @@ public class Utils {
     return t;
   }
   
+  public static Identity getIdentityById(String id) {
+    IdentityManager idm = CommonsUtils.getService(IdentityManager.class);
+    return idm.getIdentity(id, false);
+  }
 }
