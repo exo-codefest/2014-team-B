@@ -37,6 +37,7 @@ import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.Task
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.workLogged;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.completeness;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.dueDateTime;
+import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.priority;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -254,6 +255,15 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
         } else if (name.equals(assigneeId.getPropertyName())) {
           taskLifeCycle.assginedTask(updater.getRemoteId(), task);
           entity.setAssigneeId(task.getValue(assigneeId));
+        } else if (name.equals(estimation.getPropertyName())) {
+          taskLifeCycle.estimationTask(updater.getRemoteId(), task);
+          entity.setEstimation(task.getValue(estimation));
+        } else if (name.equals(businessValue.getPropertyName())) {
+          entity.setBusinessValue(task.getValue(businessValue));
+        } else if (name.equals(dueDateTime.getPropertyName())) {
+          entity.setDueDateTime(task.getValue(dueDateTime));
+        } else if (name.equals(priority.getPropertyName())) {
+          entity.setPriority(task.getValue(priority));
         }
       }
       

@@ -112,8 +112,8 @@ public abstract class TaskEntity implements NamedEntity {
   @Property(name = "exo:priority")
   public abstract Integer getPriority();
   public abstract void setPriority(Integer priority);
-  public static final PropertyLiteralExpression<String> priority =
-    new PropertyLiteralExpression<String>(String.class, "exo:priority", "priority");
+  public static final PropertyLiteralExpression<Integer> priority =
+    new PropertyLiteralExpression<Integer>(Integer.class, "exo:priority", "priority");
   
   @Property(name = "exo:affectVersion")
   public abstract String getAffectVersion();

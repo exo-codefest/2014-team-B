@@ -184,8 +184,7 @@ public class Task extends HashMap<String, Object> {
    * @return
    */
   public int getPriority() {
-    String display = getValue(TaskEntity.priority);
-    return getPriorityByName(display);
+    return getValue(TaskEntity.priority);
   }
   
   /**
@@ -193,8 +192,9 @@ public class Task extends HashMap<String, Object> {
    * @param priorityInt
    */
   public void setPriority(int priorityInt) {
-    String display = getPriorityByValue(priorityInt).getName();
-    setValue(TaskEntity.priority, display);
+    //getPriorityByName(display)
+    //String display = getPriorityByValue(priorityInt).getName();
+    setValue(TaskEntity.priority, priorityInt);
   }
 
   /**

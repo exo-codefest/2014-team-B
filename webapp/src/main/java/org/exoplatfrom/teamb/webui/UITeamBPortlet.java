@@ -172,7 +172,7 @@ public class UITeamBPortlet extends UIPortletApplication {
     return doneTasks;
   }
 
-  public EventCategory createCalendarEvent(String currentUser, String summary, Date dueDate, String groupId, String priority) throws Exception{
+  public CalendarEvent createCalendarEvent(String currentUser, String summary, Date dueDate, String groupId, String priority) throws Exception{
     CalendarService calendarService = CommonsUtils.getService(CalendarService.class);
     String calendarId = getCalendarByGroupId(groupId).getId();
     //
@@ -193,7 +193,7 @@ public class UITeamBPortlet extends UIPortletApplication {
     
     calendarService.savePublicEvent(calendarId, calendarEvent, true) ;          
     //
-    return eventCategory;
+    return calendarEvent;
   }
   
   private Calendar getCalendarByGroupId(String groupId) throws Exception {
@@ -267,7 +267,7 @@ public class UITeamBPortlet extends UIPortletApplication {
       
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
       UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
-      taskForm.setTask(task);
+      taskForm.setTask(task).setId("UIEditTaskForm");
       taskForm.initForm();
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }

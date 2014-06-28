@@ -26,7 +26,7 @@ import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.addons.codefest.team_b.core.utils.TaskManagerUtils;
-import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
@@ -86,11 +86,11 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     addUIFormInput(new UIFormTextAreaInput(FIELD_DESCRIPTION, FIELD_DESCRIPTION, null)) ;
     
     List<SelectItemOption<String>> list = new ArrayList<SelectItemOption<String>>();
-    list.add(new SelectItemOption<String>(getLabel("Blocker"), "Blocker"));
-    list.add(new SelectItemOption<String>(getLabel("Critical"), "Critical"));
-    list.add(new SelectItemOption<String>(getLabel("Major"), "Major"));
-    list.add(new SelectItemOption<String>(getLabel("Minor"), "Minor"));
-    list.add(new SelectItemOption<String>(getLabel("Trivial"), "Trivial"));
+    list.add(new SelectItemOption<String>(getLabel(Task.PRIORITY.BLOCKER.getName()), Task.PRIORITY.BLOCKER.getName()));
+    list.add(new SelectItemOption<String>(getLabel(Task.PRIORITY.CRITICAL.getName()), Task.PRIORITY.CRITICAL.getName()));
+    list.add(new SelectItemOption<String>(getLabel(Task.PRIORITY.MAJOR.getName()), Task.PRIORITY.MAJOR.getName()));
+    list.add(new SelectItemOption<String>(getLabel(Task.PRIORITY.MINOR.getName()), Task.PRIORITY.MINOR.getName()));
+    list.add(new SelectItemOption<String>(getLabel(Task.PRIORITY.TRIVIAL.getName()), Task.PRIORITY.TRIVIAL.getName()));
     addUIFormInput(new UIFormSelectBox(FIELD_PRIORITY, FIELD_PRIORITY, list));
     //
     
@@ -185,7 +185,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       getUIStringInput(FIELD_SUMMARY).setValue(this.task.getValue(TaskEntity.title));
       getUIFormTextAreaInput(FIELD_DESCRIPTION).setValue(this.task.getValue(TaskEntity.description));
       
-      getUIFormSelectBox(FIELD_PRIORITY).setValue(this.task.getValue(TaskEntity.priority));
+      getUIFormSelectBox(FIELD_PRIORITY).setValue(Task.getPriorityByValue(this.task.getValue(TaskEntity.priority)).getName());
       
       getUIFormSelectBox(FIELD_ASSIGNEE).setValue(this.task.getValue(TaskEntity.assigneeId));
       
@@ -245,6 +245,8 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       String description = uiForm.getUIFormTextAreaInput(FIELD_DESCRIPTION).getValue();
       long bv = Long.parseLong(uiForm.getUIStringInput(FIELD_BV).getValue());
       Calendar dueDate = uiForm.getUIFormDateTimeInput(FIELD_DUE_DATE).getCalendar();
+      dueDate.set(Calendar.HOUR_OF_DAY, 23);
+      dueDate.set(Calendar.MINUTE, 59);
       
       IdentityManager idm = CommonsUtils.getService(IdentityManager.class);
       Identity currentIdentity = idm.getOrCreateIdentity(OrganizationIdentityProvider.NAME, currentUser, false);
@@ -252,10 +254,10 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       UITeamBPortlet teamBPortlet = uiForm.getAncestorOfType(UITeamBPortlet.class);
       Task task = uiForm.task;
       if (uiForm.task == null) {
-        EventCategory eventCategory = teamBPortlet.createCalendarEvent(currentUser, summary, dueDate.getTime(),
+        CalendarEvent calendarEvent = teamBPortlet.createCalendarEvent(currentUser, summary, dueDate.getTime(),
                                                                        groupId, uiForm.getCalendarPriority(priority));
         task = new Task();
-        task.setTaskId(eventCategory.getId());
+        task.setTaskId(calendarEvent.getId());
         task.setValue(TaskEntity.reporterId, currentIdentity.getId());
         task.setValue(TaskEntity.groupId, groupId);
         
@@ -273,7 +275,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       
       task.setValue(TaskEntity.title, summary);
       task.setValue(TaskEntity.assigneeId, assigneeId);
-      task.setValue(TaskEntity.priority, priority);
+      task.setValue(TaskEntity.priority, Task.getPriorityByName(priority.trim()));
       task.setValue(TaskEntity.description, description);
       task.setValue(TaskEntity.businessValue, bv);
       task.setValue(TaskEntity.estimation, estimation);
@@ -281,7 +283,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       if (uiForm.task == null) {
         tm.save(currentIdentity, task);
       } else {
-        tm.update(currentIdentity, task, TaskEntity.title.getPropertyName(), 
+        tm.update(currentIdentity, task, TaskEntity.title.getPropertyName(), TaskEntity.estimation.getPropertyName(), 
                   TaskEntity.dueDateTime.getPropertyName(), TaskEntity.priority.getPropertyName(),
                   TaskEntity.businessValue.getPropertyName(), TaskEntity.description.getPropertyName());
       }
