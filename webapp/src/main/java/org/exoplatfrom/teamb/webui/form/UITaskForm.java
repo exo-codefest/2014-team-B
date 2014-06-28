@@ -16,15 +16,16 @@
  */
 package org.exoplatfrom.teamb.webui.form;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.commons.utils.CommonsUtils;
-import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.social.core.identity.model.Identity;
@@ -32,7 +33,6 @@ import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvide
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
-import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -46,6 +46,7 @@ import org.exoplatform.webui.form.UIFormDateTimeInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormTextAreaInput;
+import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatfrom.teamb.webui.UITeamBPortlet;
 import org.exoplatfrom.teamb.webui.Utils;
 
@@ -54,7 +55,7 @@ import org.exoplatfrom.teamb.webui.Utils;
     template = "app:/templates/teamb/webui/form/UITaskForm.gtmpl", 
     events = {
       @EventConfig(listeners = UITaskForm.SaveActionListener.class),
-      @EventConfig(listeners = UITaskForm.OnChangeGroupActionListener.class),
+      @EventConfig(listeners = UITaskForm.OnChangeGroupActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UITaskForm.CloseActionListener.class, phase = Phase.DECODE)
   })
 })
@@ -75,7 +76,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
   final public static String FIELD_COMPLETENESS   = "Completeness";
   
   public UITaskForm() throws Exception {
-    addUIFormInput(new UIFormStringInput(FIELD_SUMMARY, FIELD_SUMMARY, null));
+    addUIFormInput(new UIFormStringInput(FIELD_SUMMARY, FIELD_SUMMARY, null).addValidator(MandatoryValidator.class));
     addUIFormInput(new UIFormTextAreaInput(FIELD_DESCRIPTION, FIELD_DESCRIPTION, null)) ;
     
     List<SelectItemOption<String>> list = new ArrayList<SelectItemOption<String>>();
@@ -114,7 +115,8 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
   }
   
   public void initForm(String currentUser) {
-    if (currentUser == null && this.task != null) {
+    boolean isAddingNew = currentUser != null;
+    if (!isAddingNew && this.task != null) {
       String reporterId = this.task.getValue(TaskEntity.reporterId);
       currentUser = Utils.getIdentityById(reporterId).getRemoteId();
     }
@@ -168,14 +170,27 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       
       //
       getUIFormSelectBox(FIELD_GROUP).setValue(this.task.getValue(TaskEntity.groupId));
-      
+      if (!isAddingNew) {
+        getUIFormSelectBox(FIELD_GROUP).setDisabled(true);
+      }
       //
       getUIStringInput(FIELD_BV).setValue(this.task.getValue(TaskEntity.businessValue) + "");
       
-      getUIFormDateTimeInput(FIELD_DUE_DATE).setValue(this.task.getValue(TaskEntity.estimation));
-      getUIFormDateTimeInput(FIELD_COMPLETED_DATE).setValue(this.task.getValue(TaskEntity.resolvedTime) + "");
+      DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+      Calendar calendar = Calendar.getInstance();
+      
+      if (this.task.getValue(TaskEntity.createdTime) != null) {  
+        System.out.println(this.task.getValue(TaskEntity.createdTime) + " : " + formatter.format(calendar.getTime()));
+        calendar.setTimeInMillis(this.task.getValue(TaskEntity.createdTime));
+        getUIFormDateTimeInput(FIELD_DUE_DATE).setValue(formatter.format(calendar.getTime()));
+      }
+      
+      if (this.task.getValue(TaskEntity.createdTime) != null) {
+        calendar.setTimeInMillis(this.task.getValue(TaskEntity.createdTime));
+        getUIFormDateTimeInput(FIELD_COMPLETED_DATE).setValue(formatter.format(calendar.getTime()));
+      }
      
-      getUIStringInput(FIELD_BV).setValue(this.task.getValue(TaskEntity.workLogged));
+      getUIStringInput(FIELD_COMPLETENESS).setValue(this.task.getValue(TaskEntity.workLogged));
     }
   }
 
@@ -214,9 +229,9 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       String reporter = uiForm.getUIStringInput(FIELD_REPORTER).getValue();
       String description = uiForm.getUIFormTextAreaInput(FIELD_DESCRIPTION).getValue();
       long bv = Long.parseLong(uiForm.getUIStringInput(FIELD_BV).getValue());
-      Date dueDate = uiForm.getUIFormDateTimeInput(FIELD_DUE_DATE).getCalendar().getTime();
+      Calendar dueDate = uiForm.getUIFormDateTimeInput(FIELD_DUE_DATE).getCalendar();
       UITeamBPortlet teamBPortlet = uiForm.getAncestorOfType(UITeamBPortlet.class);
-      teamBPortlet.createCalendarEvent(currentUser, summary, dueDate, groupId, uiForm.getCalendarPriority(priority));
+      teamBPortlet.createCalendarEvent(currentUser, summary, dueDate.getTime(), groupId, uiForm.getCalendarPriority(priority));
       
       //
       IdentityManager idm = CommonsUtils.getService(IdentityManager.class);
@@ -234,7 +249,11 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       task.setValue(TaskEntity.estimation, dueDate.getTime() + "");
       task.setValue(TaskEntity.businessValue, bv);
       task.setValue(TaskEntity.description, description);
-      tm.save(reporterIdentity, task);
+      if (uiForm.task == null) {
+        tm.save(reporterIdentity, task);
+      } else {
+        tm.update(reporterIdentity, task, TaskEntity.title.getPropertyName(), TaskEntity.priority.getPropertyName(), TaskEntity.businessValue.getPropertyName(), TaskEntity.description.getPropertyName());
+      }
       
       teamBPortlet.cancelAction();
       event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
@@ -244,10 +263,24 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
   static public class OnChangeGroupActionListener extends EventListener<UITaskForm> {
     public void execute(Event<UITaskForm> event) throws Exception {
       String currentUser = event.getRequestContext().getRemoteUser();
-      //
-      UITeamBPortlet teamBPortlet = event.getSource().getAncestorOfType(UITeamBPortlet.class);
+      UITaskForm uiForm = event.getSource();
+
+      String selectedGroupId = uiForm.getUIFormSelectBox(FIELD_GROUP).getValue();
       
-      teamBPortlet.cancelAction();
+      SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
+      Space space = spaceService.getSpaceByGroupId(selectedGroupId);
+      List<SelectItemOption<String>> list = new ArrayList<SelectItemOption<String>>();
+      if (spaceService.isManager(space, currentUser)) {
+        for (String member : space.getMembers()) {
+          list.add(new SelectItemOption<String>(member, member));
+        }
+        uiForm.getUIFormSelectBox(FIELD_ASSIGNEE).setOptions(list);
+      } else {
+        String manager = space.getManagers()[0];
+        list.add(new SelectItemOption<String>(manager, manager));
+        uiForm.getUIFormSelectBox(FIELD_ASSIGNEE).setOptions(list);
+        uiForm.getUIFormSelectBox(FIELD_ASSIGNEE).setDisabled(true);
+      }
     }
   }
 }

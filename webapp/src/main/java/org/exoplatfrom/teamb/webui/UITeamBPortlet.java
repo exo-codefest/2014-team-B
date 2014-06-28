@@ -16,6 +16,7 @@
  */
 package org.exoplatfrom.teamb.webui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -51,6 +53,7 @@ import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
+import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatfrom.teamb.webui.form.UIChangeView;
@@ -219,6 +222,21 @@ public class UITeamBPortlet extends UIPortletApplication {
       UITeamBPortlet teamBPortlet = event.getSource();
       WebuiRequestContext context  = event.getRequestContext();
       Identity identity = ConversationState.getCurrent().getIdentity();
+      List<SelectItemOption<String>> list = new ArrayList<SelectItemOption<String>>();
+      List<String> spaces = new ArrayList<String>();
+      for (MembershipEntry membership : identity.getMemberships()) {
+        String gr = membership.getGroup();
+        if (gr.startsWith("/spaces") && ! spaces.contains(gr)) {
+          list.add(new SelectItemOption<String>(gr, gr));
+          spaces.add(gr);
+        }
+      }
+
+      if (list.isEmpty()) {
+        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.taskNotFound", new String[]{}, ApplicationMessage.WARNING));
+        ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
+        return;
+      }
       
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
       UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
