@@ -23,14 +23,14 @@
       DragDrop.hided = false;
 
       DragDrop.dragObject = $('<li class="dropItem"></li>');
-      DragDrop.source = $(this).hide();
+      DragDrop.source = $(this);
       DragDrop.dragObject.text(DragDrop.source.find('.taskTitle:first').text())
             .attr('data-id', DragDrop.source.data('id'));
       DragDrop.dragObject.css({
         'border' : 'solid 1px #cfcfcf',
         'line-height' : '24px',
         'position' : 'absolute',
-        'width' : DragDrop.source.width() + 50,
+        'width' : DragDrop.source.width()- 50,
         'white-space' : 'nowrap',
         'overflow': 'hidden',
         'opacity': '0.85',
@@ -71,6 +71,9 @@
     },
 
     onDrag : function(evt) {
+			if (DragDrop.source && DragDrop.source.length > 0) {
+				DragDrop.source.hide();
+			}
       if (DragDrop.dragObject && DragDrop.dragObject.length > 0) {
         DragDrop.dragObject.css({
           'left' : (evt.pageX + 2) + 'px',
@@ -109,7 +112,6 @@
     },
 
     dropCallback : function(target) {
-      console.log("dropCallback");
       DragDrop.component.find('li.tmpItem').hide();
       
       if(target) {

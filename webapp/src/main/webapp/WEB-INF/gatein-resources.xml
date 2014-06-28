@@ -60,6 +60,9 @@
       <module>TaskDragDrop</module>
     </depends>
     <depends>
+      <module>ForumMessagePopupPlugin</module>
+    </depends>    
+    <depends>
       <module>uiForm</module>
     </depends>
     <depends>

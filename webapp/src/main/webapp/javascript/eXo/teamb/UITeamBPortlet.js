@@ -15,7 +15,25 @@
       if(id != null) {
         $('#'+id).find('[rel=tooltip]').tooltip();
       }
-    }
+    },
+    initConfirm : function(id) {
+	    var component = $('#'+id);
+	    var confirms = component.find('.confirm');
+	    
+	    $.each(confirms, function(idx, element) {
+	      var thizz = $(element);
+	      if(thizz.hasAttr('id') == false) {
+	        thizz.attr('id', id + 'Confirm' + idx);
+	      }
+	      var settings = {isMulti: false, message : ''};
+	      if(thizz.hasAttr('data-confirm')) {
+	        settings.message = thizz.attr('data-confirm');
+	      } else {
+	    	settings.message = thizz.html();
+	      }
+	      thizz.confirmation(settings);
+	    });
+     }
   }
   return UITeamBPortlet;
 })(gj, window, document);
