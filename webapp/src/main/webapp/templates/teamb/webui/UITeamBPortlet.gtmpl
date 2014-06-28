@@ -66,9 +66,9 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 							<%
 								for(Task task in opens) {
 							%>
-								<li class="clearfix effect-hover">
+								<li class="clearfix effect-hover task-item" data-id="<%=task.getId()%>">
 									<a class="ellipsis taskTitle" rel="tooltip" data-placement="bottom" title="${task.getValue(TaskEntity.title)}"
-										 data-id="<%=task.getId()%>" href="javascript:void(0);" onclick="<%=uicomponent.event("ViewTask", task.getId())%>">${task.getValue(TaskEntity.title)}</a>
+										 href="javascript:void(0);" onclick="<%=uicomponent.event("ViewTask", task.getId())%>">${task.getValue(TaskEntity.title)}</a>
 									<a class="item-hover actionIcon" rel="tooltip" data-placement="bottom" title="Edit" href="javascript:void(0);" onclick="<%=uicomponent.event("EditTask", task.getId())%>"><i class="uiIconEdit uiIconLightGray"></i></a>
 									<a class="item-hover actionIcon" rel="tooltip" data-placement="bottom" title="Remove" href="javascript:void(0);" onclick="<%=uicomponent.event("RemoveTask", task.getId())%>"><i class="uiIconDelete uiIconLightGray"></i></a>
 								</li>
@@ -81,9 +81,9 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 							<%
 							for(Task task in inprogress) {
 							%>
-								<li class="clearfix effect-hover">
+								<li class="clearfix effect-hover task-item" data-id="<%=task.getId()%>">
 									<a class="ellipsis taskTitle" rel="tooltip" data-placement="bottom" title="${task.getValue(TaskEntity.title)}"
-										 data-id="<%=task.getId()%>" href="javascript:void(0);" onclick="<%=uicomponent.event("ViewTask", task.getId())%>">${task.getValue(TaskEntity.title)}</a>
+										 href="javascript:void(0);" onclick="<%=uicomponent.event("ViewTask", task.getId())%>">${task.getValue(TaskEntity.title)}</a>
 									<a class="item-hover actionIcon" rel="tooltip" data-placement="bottom" title="Edit" href="javascript:void(0);" onclick="<%=uicomponent.event("EditTask", task.getId())%>"><i class="uiIconEdit uiIconLightGray"></i></a>
 									<a class="item-hover actionIcon" rel="tooltip" data-placement="bottom" title="Remove" href="javascript:void(0);" onclick="<%=uicomponent.event("RemoveTask", task.getId())%>"><i class="uiIconDelete uiIconLightGray"></i></a>
 								</li>
@@ -96,9 +96,9 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 							<%
 							for(Task task in dones) {
 							%>
-								<li class="clearfix effect-hover">
+								<li class="clearfix effect-hover task-item" data-id="<%=task.getId()%>">
 									<a class="ellipsis taskTitle" rel="tooltip" data-placement="bottom" title="${task.getValue(TaskEntity.title)}"
-										 data-id="<%=task.getId()%>" href="javascript:void(0);" onclick="<%=uicomponent.event("ViewTask", task.getId())%>">${task.getValue(TaskEntity.title)}</a>
+										 href="javascript:void(0);" onclick="<%=uicomponent.event("ViewTask", task.getId())%>">${task.getValue(TaskEntity.title)}</a>
 									<a class="item-hover actionIcon" rel="tooltip" data-placement="bottom" title="Edit" href="javascript:void(0);" onclick="<%=uicomponent.event("EditTask", task.getId())%>"><i class="uiIconEdit uiIconLightGray"></i></a>
 									<a class="item-hover actionIcon" rel="tooltip" data-placement="bottom" title="Remove" href="javascript:void(0);" onclick="<%=uicomponent.event("RemoveTask", task.getId())%>"><i class="uiIconDelete uiIconLightGray"></i></a>
 								</li>
@@ -123,6 +123,7 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 	</div>
 	<%
 		uicomponent.renderChild(org.exoplatfrom.teamb.webui.form.UIPopupAction.class);
+		_ctx.include("app:/templates/teamb/webui/UITeamBPopupTemplate.gtmpl");
 	%>
 <div><span></span></div>
 </div>

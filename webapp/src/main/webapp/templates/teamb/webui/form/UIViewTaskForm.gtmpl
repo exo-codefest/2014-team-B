@@ -22,6 +22,7 @@ Task task = uicomponent.getTask();
 %>
 <div class="uiTaskForm">  
   <% uiform.begin(); %> 
+  <div class="resizable">
   <% if (task != null) { %>
   <div id="taskViewBlock" class="form-horizontal">
     <table>
@@ -148,12 +149,13 @@ Task task = uicomponent.getTask();
       </tr>
     </table>
   </div>
-  <div class="uiAction">
-    <button onclick="<%=uicomponent.event("EditTask")%>" class="btn" type="button">$editLabel</button>
-    <button onclick="<%=uicomponent.event("Close")%>" class="btn" type="button">$closeLabel</button>
-  </div>
   <% } else { %>
   <%=_ctx.appRes("UIViewTaskForm.label.ErrorLoadingTask")%>
   <% } %>
+  </div>
+  <div class="uiAction uiActionBorder">
+    <button onclick="<%=uicomponent.event("EditTask")%>" class="btn" type="button">$editLabel</button>
+    <button onclick="<%=uicomponent.event("Close")%>" class="btn" type="button">$closeLabel</button>
+  </div>
   <%uiform.end();%>
 </div>

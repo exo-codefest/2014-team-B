@@ -116,13 +116,12 @@
         var ul = $(target);
         ul.append(DragDrop.source);
         //
-        var params = '&objectId=' + window.decodeURI(DragDrop.source.attr('id'));
+        var params = '&objectId=' + window.decodeURI(DragDrop.source.attr('data-id'));
         params += '&taskstatus=' + ul.attr('data-action-type');
         var action = ul.attr('data-action').replace('javascript:', '');
         action = action.replace('ajaxRequest=true', 'ajaxRequest=true' + params);
         $.globalEval(action);
       }
-     // console.log(target);
     },
 
     endDrop : function() {

@@ -24,6 +24,7 @@ import javax.portlet.PortletMode;
 
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
+import org.exoplatform.addons.codefest.team_b.core.utils.TaskManagerUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -69,12 +70,13 @@ import org.exoplatfrom.teamb.webui.form.UIViewTaskForm;
    }
 )
 public class UITeamBPortlet extends UIPortletApplication {
-  
-  public static final String DEFAULT_VIEW = "personal";
-  private String groupToViewId = DEFAULT_VIEW;
-  private String tabActive = "Day"; 
-  
   private static final Log   LOG                          = ExoLogger.getLogger(UITeamBPortlet.class);
+
+  public static final String DEFAULT_VIEW                 = "personal";
+  
+  private String             groupToViewId                = DEFAULT_VIEW;
+  
+  private String             tabActive                    = "Day";
 
   public static final String ANY                          = "*.*";
 
@@ -303,13 +305,22 @@ public class UITeamBPortlet extends UIPortletApplication {
 
   static public class DragDropActionListener extends EventListener<UITeamBPortlet> {
     public void execute(Event<UITeamBPortlet> event) throws Exception {
-      UITeamBPortlet teamBPortlet = event.getSource();
-      String taskId = event.getRequestContext().getRequestParameter(OBJECTID);
-      String newTaskStatus = event.getRequestContext().getRequestParameter("taskstatus");
+      WebuiRequestContext context  = event.getRequestContext();
       
-      System.out.println("TaskId: " + taskId);
-      System.out.println("New Status: " + newTaskStatus);
-      ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
+      String taskId = context.getRequestParameter(OBJECTID);
+      String newTaskStatus = context.getRequestParameter("taskstatus");
+      if ("open".equals(newTaskStatus)) {
+        TaskManagerUtils.reOpen(taskId);
+        LOG.info("Done to reopen task " + taskId);
+      } else if ("inprogress".equals(newTaskStatus)) {
+        TaskManagerUtils.inProgress(taskId);
+        LOG.info("Done to inProgress task " + taskId);
+      } else if ("done".equals(newTaskStatus)) {
+        LOG.info("Done to resolved task " + taskId);
+        TaskManagerUtils.resolved(taskId);
+      }
+      
+      ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
     }
   }
 }
