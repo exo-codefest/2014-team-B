@@ -16,6 +16,8 @@
  */
 package org.exoplatfrom.teamb.webui;
 
+import java.util.regex.Pattern;
+
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.commons.utils.CommonsUtils;
@@ -78,5 +80,39 @@ public class Utils {
   public static Identity getIdentityById(String id) {
     IdentityManager idm = CommonsUtils.getService(IdentityManager.class);
     return idm.getIdentity(id, false);
+  }
+  
+  
+  private static Pattern weekMatcher   = Pattern.compile("([0-9]w)+$");
+  private static Pattern dayMatcher    = Pattern.compile("([0-9]d)+$");
+  private static Pattern hourMatcher   = Pattern.compile("([0-9]h)+$");
+  private static Pattern minuteMatcher = Pattern.compile("([0-9]m)+$");
+
+  /**
+   * Get value time by from 1w 3d 9h 40m to minutes
+   * 
+   * @param input The input by format 1w 3d 9h 40m
+   * @return The mitutes
+   */
+  public static int getTimeValue(String input) {
+    if (input == null || input.trim().length() == 0) {
+      return 0;
+    }
+    input = input.toLowerCase().trim();
+    String[] values = input.split(" ");
+    int m = 0;
+    for (int i = 0; i < values.length; i++) {
+      String v = values[i];
+      if (weekMatcher.matcher(v).find()) {
+        m += Integer.valueOf(v.replace("w", "")) * 5 * 8 * 60;
+      } else if (dayMatcher.matcher(v).find()) {
+        m += Integer.valueOf(v.replace("d", "")) * 8 * 60;
+      } else if (hourMatcher.matcher(v).find()) {
+        m += Integer.valueOf(v.replace("h", "")) * 60;
+      } else if (minuteMatcher.matcher(v).find()) {
+        m += Integer.valueOf(v.replace("m", ""));
+      }
+    }
+    return m;
   }
 }

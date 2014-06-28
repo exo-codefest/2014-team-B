@@ -15,6 +15,10 @@
                 </div>
                 <div class="controls">
                   <% uiform.renderField(field) %>
+                  <% if(field.getName().equals("LogWork")) {%>
+                  	<span>(eg. 3w 4d 12h 4m)</span>
+                  <% } %>
+                  
                 </div>
                 <%} else {%>
                   <div class="controlUpload controls-full"><% uiform.renderField(field) %></div>

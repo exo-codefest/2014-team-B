@@ -28,10 +28,9 @@ import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
-import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
+import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIFormSelectBox;
-import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatfrom.teamb.webui.UITeamBPortlet;
 
 
@@ -51,7 +50,7 @@ public class UIChangeView extends BaseUIForm {
     UIFormSelectBox selectBox = new UIFormSelectBox(UITaskForm.FIELD_GROUP, UITaskForm.FIELD_GROUP, null);
     selectBox.setOnChange("OnChangeGroup");
     addUIFormInput(selectBox);
-    addUIFormInput(new UIFormStringInput(FIELD_SEARCH, FIELD_SEARCH, null));
+  //  addUIFormInput(new UIFormStringInput(FIELD_SEARCH, FIELD_SEARCH, null));
   }
 
   public void initOptionsValue() throws Exception {

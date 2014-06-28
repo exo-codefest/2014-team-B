@@ -102,6 +102,23 @@ public class TaskManagerUtils {
       manager.update(updater, task, TaskEntity.status.getPropertyName());
     }
   }
+
+  /**
+   * Update the log-word updated.
+   * 
+   * @param taskId the taskId
+   */
+  public static void logWork(String taskId, String value) {
+    TaskManager manager = CommonsUtils.getService(TaskManager.class);
+    
+    String updater = ConversationState.getCurrent().getIdentity().getUserId();
+    
+    Task task = manager.get(taskId);
+    if (task != null) {
+      task.setValue(TaskEntity.workLogged, value);
+      manager.update(updater, task, TaskEntity.workLogged.getPropertyName());
+    }
+  }
   
   /**
    * Update the status when the task has been resolved.

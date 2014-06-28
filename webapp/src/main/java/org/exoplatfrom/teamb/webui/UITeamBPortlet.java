@@ -24,6 +24,8 @@ import javax.portlet.PortletMode;
 
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
+import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter;
+import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter.TIMEVIEW;
 import org.exoplatform.addons.codefest.team_b.core.utils.TaskManagerUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -52,6 +54,7 @@ import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatfrom.teamb.webui.form.UIChangeView;
+import org.exoplatfrom.teamb.webui.form.UILogWork;
 import org.exoplatfrom.teamb.webui.form.UIPopupAction;
 import org.exoplatfrom.teamb.webui.form.UITaskForm;
 import org.exoplatfrom.teamb.webui.form.UIViewTaskForm;
@@ -121,38 +124,35 @@ public class UITeamBPortlet extends UIPortletApplication {
     this.groupToViewId = groupToViewId;
   }
 
-  public List getDone() {
-    List list = new ArrayList();
-    return list;
-  }
-
-  public List getInprogress() {
-    List list = new ArrayList();
-    return list;
-  }
-
-  public List getOpen() {
-    List list = new ArrayList();
-    return list;
-  }
-  
   protected String getTabActive() {
     return tabActive ;
   }
 
   protected List<Task> getOpenedTasks() {
+    TaskFilter filter = new TaskFilter();
+    filter.timeview(TIMEVIEW.getTimeView(tabActive))
+          .status(Task.STATUS.OPEN);
+    
     TaskManager tm = CommonsUtils.getService(TaskManager.class);
     List<Task> openedTasks = tm.getAll();
     return openedTasks;
   }
   
   protected List<Task> getInProgressTasks() {
+    TaskFilter filter = new TaskFilter();
+    filter.timeview(TIMEVIEW.getTimeView(tabActive))
+          .status(Task.STATUS.IN_PROGRESS);
+    
     TaskManager tm = CommonsUtils.getService(TaskManager.class);
     List<Task> inProgressTasks = tm.getAll();
     return inProgressTasks;
   }
 
   protected List<Task> getDoneTasks() {
+    TaskFilter filter = new TaskFilter();
+    filter.timeview(TIMEVIEW.getTimeView(tabActive))
+          .status(Task.STATUS.RESOLVED);
+    
     TaskManager tm = CommonsUtils.getService(TaskManager.class);
     List<Task> doneTasks = tm.getAll();
     return doneTasks;
@@ -265,7 +265,6 @@ public class UITeamBPortlet extends UIPortletApplication {
       WebuiRequestContext context  = event.getRequestContext();
       
       String taskId = context.getRequestParameter(OBJECTID);
-      UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
       
       TaskManager tm = CommonsUtils.getService(TaskManager.class);
       Task task = tm.get(taskId);
@@ -275,6 +274,7 @@ public class UITeamBPortlet extends UIPortletApplication {
         return;
       }
       
+      UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
       UIViewTaskForm taskForm = popupAction.activate(UIViewTaskForm.class, 800);
       taskForm.setTask(org.exoplatfrom.teamb.webui.Utils.fillPropertiesTask(task));
       context.addUIComponentToUpdateByAjax(popupAction);
@@ -308,7 +308,7 @@ public class UITeamBPortlet extends UIPortletApplication {
   static public class DragDropActionListener extends EventListener<UITeamBPortlet> {
     public void execute(Event<UITeamBPortlet> event) throws Exception {
       WebuiRequestContext context  = event.getRequestContext();
-      
+      boolean ignoreUpdate = true;
       String taskId = context.getRequestParameter(OBJECTID);
       String newTaskStatus = context.getRequestParameter("taskstatus");
       if ("open".equals(newTaskStatus)) {
@@ -320,9 +320,16 @@ public class UITeamBPortlet extends UIPortletApplication {
       } else if ("done".equals(newTaskStatus)) {
         LOG.info("Done to resolved task " + taskId);
         TaskManagerUtils.resolved(taskId);
+        //
+        ignoreUpdate = false;
+        UIPopupAction popupAction = event.getSource().getChild(UIPopupAction.class);
+        UILogWork taskForm = popupAction.activate(UILogWork.class, 650);
+        taskForm.setTaskId(taskId);
+        context.addUIComponentToUpdateByAjax(popupAction);
       }
-      
-      ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
+      if(ignoreUpdate) {
+        ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
+      }
     }
   }
 }

@@ -16,6 +16,10 @@
  */
 package org.exoplatform.addons.codefest.team_b.core.model;
 
+import java.util.Calendar;
+
+import org.exoplatform.addons.codefest.team_b.core.model.Task.STATUS;
+
 /**
  * Created by The eXo Platform SAS
  * Author : eXoPlatform
@@ -23,5 +27,88 @@ package org.exoplatform.addons.codefest.team_b.core.model;
  * Jun 26, 2014  
  */
 public class TaskFilter {
+  public enum TIMEVIEW {
+    DAY {
+      @Override
+      Calendar getFrom() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 1);
+        return calendar;
+      }
+
+      @Override
+      Calendar getTo() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        return Calendar.getInstance();
+      }
+    }, WEEK {
+      @Override
+      Calendar getFrom() {
+        Calendar calendar = DAY.getFrom();
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        return calendar;
+      }
+
+      @Override
+      Calendar getTo() {
+        Calendar calendar = DAY.getTo();
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+        return calendar;
+      }
+    }, MONTH {
+      @Override
+      Calendar getFrom() {
+        Calendar calendar = DAY.getFrom();
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return calendar;
+      }
+
+      @Override
+      Calendar getTo() {
+        Calendar calendar = DAY.getTo();
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return calendar;
+      }
+    };
+    
+    public static TIMEVIEW getTimeView(String name) {
+      for (TIMEVIEW timeView : values()) {
+        if (timeView.name().equalsIgnoreCase(name)) {
+          return timeView;
+        }
+      }
+      return null;
+    }
+    abstract Calendar getFrom();
+    abstract Calendar getTo();
+  }
+  
+  private TIMEVIEW timeview;
+  private STATUS status;
+  
+  public TaskFilter() {
+  }
+  
+  public TaskFilter status(STATUS timeview) {
+    this.status = timeview;
+    return this;
+  }
+
+  public STATUS status() {
+    return this.status;
+  }
+
+  public TaskFilter timeview(TIMEVIEW timeview) {
+    this.timeview = timeview;
+    return this;
+  }
+  
+  public TIMEVIEW timeview() {
+    return this.timeview;
+  }
+  
 
 }
