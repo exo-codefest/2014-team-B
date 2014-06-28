@@ -19,12 +19,15 @@ package org.exoplatform.addons.codefest.team_b.core.impl;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.affectVersion;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.assigneeId;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.businessValue;
+import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.completeness;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.createdTime;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.description;
+import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.dueDateTime;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.estimation;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.fixVersion;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.groupId;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.linkUrl;
+import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.priority;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.remaining;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.reporterId;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.resolution;
@@ -35,17 +38,10 @@ import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.Task
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.type;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.updatedTime;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.workLogged;
-import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.completeness;
-import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.dueDateTime;
-import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.priority;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.UnsupportedRepositoryOperationException;
 
 import org.chromattic.api.query.Ordering;
 import org.chromattic.api.query.Query;
@@ -260,8 +256,12 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
           entity.setEstimation(task.getValue(estimation));
         } else if (name.equals(businessValue.getPropertyName())) {
           entity.setBusinessValue(task.getValue(businessValue));
+        } else if (name.equals(updatedTime.getPropertyName())) {
+          entity.setUpdatedTime(task.getValue(updatedTime));
         } else if (name.equals(dueDateTime.getPropertyName())) {
           entity.setDueDateTime(task.getValue(dueDateTime));
+        } else if (name.equals(resolvedTime.getPropertyName())) {
+          entity.setResolvedTime(task.getValue(resolvedTime));
         } else if (name.equals(priority.getPropertyName())) {
           entity.setPriority(task.getValue(priority));
         }

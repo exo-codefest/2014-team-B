@@ -104,7 +104,7 @@ public class UITeamBPortlet extends UIPortletApplication {
     PortletRequestContext portletReqContext = (PortletRequestContext) context;
     PortletMode portletMode = portletReqContext.getApplicationMode();
     if (portletMode == PortletMode.VIEW) {
-      getChild(UIChangeView.class).initOptionsValue();
+      getChild(UIChangeView.class).initOptionsValue(getGroupToViewId());
     } else if (portletMode == PortletMode.EDIT) {
     }
     super.processRender(app, context);
@@ -196,6 +196,22 @@ public class UITeamBPortlet extends UIPortletApplication {
     return calendarEvent;
   }
   
+  public void updateCalendarEvent(String currentUser, String summary, Date dueDate,
+                                  String groupId, String priority, String eventId) {
+    try {
+      CalendarService calendarService = CommonsUtils.getService(CalendarService.class);
+      String calendarId = getCalendarByGroupId(groupId).getId();
+      CalendarEvent calendarEvent = calendarService.getEventById(eventId);
+      calendarEvent.setSummary(summary);
+      calendarEvent.setPriority(priority);
+      calendarEvent.setTaskDelegator(currentUser);
+      calendarEvent.setToDateTime(dueDate);
+      calendarService.savePublicEvent(calendarId, calendarEvent, false);
+    } catch (Exception e) {
+      LOG.warn("Updating the calendarEvent " + eventId + " is unsuccessfully.", e);
+    }
+  }
+
   private Calendar getCalendarByGroupId(String groupId) throws Exception {
     CalendarService calendarService = CommonsUtils.getService(CalendarService.class);
     SpaceService spaceService = CommonsUtils.getService(SpaceService.class);

@@ -50,7 +50,7 @@ public class TaskManagerUtils {
     if (task != null) {
       task.setValue(TaskEntity.status, Task.STATUS.RESOLVED.getName());
       task.setValue(TaskEntity.resolvedTime, Calendar.getInstance().getTimeInMillis());
-      manager.update(updater, task, TaskEntity.status.getPropertyName());
+      manager.update(updater, task, TaskEntity.status.getPropertyName(), TaskEntity.resolvedTime.getPropertyName());
     }
   }
   
@@ -68,7 +68,7 @@ public class TaskManagerUtils {
     if (task != null) {
       task.setValue(TaskEntity.status, Task.STATUS.IN_PROGRESS.getName());
       task.setValue(TaskEntity.updatedTime, Calendar.getInstance().getTimeInMillis());
-      manager.update(updater, task, TaskEntity.status.getPropertyName());
+      manager.update(updater, task, TaskEntity.status.getPropertyName(), TaskEntity.updatedTime.getPropertyName());
     }
   }
   

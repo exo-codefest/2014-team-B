@@ -50,14 +50,15 @@ public class TaskFilter {
       @Override
       public Calendar from() {
         Calendar calendar = DAY.from();
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
         return calendar;
       }
 
       @Override
       public Calendar to() {
         Calendar calendar = DAY.to();
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
         return calendar;
       }
     }, MONTH {
@@ -70,7 +71,7 @@ public class TaskFilter {
 
       @Override
       public Calendar to() {
-        Calendar calendar = DAY.to();
+        Calendar calendar = WEEK.to();
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         return calendar;
       }

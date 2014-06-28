@@ -95,7 +95,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     //
     
     
-    addUIFormInput(new UIFormStringInput(FIELD_REPORTER, FIELD_REPORTER, null));
+    addUIFormInput(new UIFormStringInput(FIELD_REPORTER, FIELD_REPORTER, null).addValidator(MandatoryValidator.class));
     List<SelectItemOption<String>> assigneeList = new ArrayList<SelectItemOption<String>>();
     addUIFormInput(new UIFormSelectBox(FIELD_ASSIGNEE, FIELD_ASSIGNEE, assigneeList));
     //
@@ -104,10 +104,9 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     selectBox.setOnChange("OnChangeGroup");
     addUIFormInput(selectBox);
     
-    addUIFormInput(new UIFormStringInput(FIELD_BV, FIELD_BV, null));
-    addUIFormInput(new UIFormStringInput(FIELD_ESTIMATION, FIELD_ESTIMATION, null));
+    addUIFormInput(new UIFormStringInput(FIELD_BV, FIELD_BV, null).addValidator(MandatoryValidator.class));
+    addUIFormInput(new UIFormStringInput(FIELD_ESTIMATION, FIELD_ESTIMATION, null).addValidator(MandatoryValidator.class));
     addUIFormInput(new UIFormDateTimeInput(FIELD_DUE_DATE, FIELD_DUE_DATE, null, false));
-//    addUIFormInput(new UIFormDateTimeInput(FIELD_COMPLETED_DATE, FIELD_COMPLETED_DATE, null, false));
     
     setActions(new String[]{"Save", "Close"});
   }
@@ -192,20 +191,15 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       //
       getUIStringInput(FIELD_BV).setValue(this.task.getValue(TaskEntity.businessValue) + "");
       
-      DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-      Calendar calendar = Calendar.getInstance();
       
       getUIStringInput(FIELD_ESTIMATION).setValue(String.valueOf(this.task.getValue(TaskEntity.estimation)));
       
       if (this.task.getValue(TaskEntity.dueDateTime) != null) {  
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(this.task.getValue(TaskEntity.dueDateTime));
         getUIFormDateTimeInput(FIELD_DUE_DATE).setValue(formatter.format(calendar.getTime()));
       }
-//      if (this.task.getValue(TaskEntity.remaining) != null) {
-//        calendar.setTimeInMillis(this.task.getValue(TaskEntity.createdTime));
-//        getUIFormDateTimeInput(FIELD_COMPLETED_DATE).setValue(formatter.format(calendar.getTime()));
-//      }
-     
     }
   }
 
@@ -245,8 +239,11 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       String description = uiForm.getUIFormTextAreaInput(FIELD_DESCRIPTION).getValue();
       long bv = Long.parseLong(uiForm.getUIStringInput(FIELD_BV).getValue());
       Calendar dueDate = uiForm.getUIFormDateTimeInput(FIELD_DUE_DATE).getCalendar();
-      dueDate.set(Calendar.HOUR_OF_DAY, 23);
-      dueDate.set(Calendar.MINUTE, 59);
+      if(dueDate == null) {
+        dueDate = Calendar.getInstance();
+      }
+      dueDate.set(Calendar.HOUR_OF_DAY, 0);
+      dueDate.set(Calendar.MINUTE, 2);
       
       IdentityManager idm = CommonsUtils.getService(IdentityManager.class);
       Identity currentIdentity = idm.getOrCreateIdentity(OrganizationIdentityProvider.NAME, currentUser, false);
@@ -265,11 +262,11 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
         task.setValue(TaskEntity.createdTime, currentTime.getTimeInMillis());
         task.setValue(TaskEntity.updatedTime, currentTime.getTimeInMillis());
         task.setValue(TaskEntity.status, Task.STATUS.OPEN.getName());
+      } else {
+        teamBPortlet.updateCalendarEvent(currentUser, summary, dueDate.getTime(), groupId, priority, uiForm.task.getValue(TaskEntity.taskId));
       }
-      
       //
       String assigneeId = idm.getOrCreateIdentity(OrganizationIdentityProvider.NAME, assignee, false).getId();
-      
       //
       TaskManager tm = CommonsUtils.getService(TaskManager.class);
       
@@ -287,7 +284,6 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
                   TaskEntity.dueDateTime.getPropertyName(), TaskEntity.priority.getPropertyName(),
                   TaskEntity.businessValue.getPropertyName(), TaskEntity.description.getPropertyName());
       }
-      
       teamBPortlet.cancelAction();
       event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
     }

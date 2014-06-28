@@ -53,7 +53,7 @@ public class UIChangeView extends BaseUIForm {
   //  addUIFormInput(new UIFormStringInput(FIELD_SEARCH, FIELD_SEARCH, null));
   }
 
-  public void initOptionsValue() throws Exception {
+  public void initOptionsValue(String value) throws Exception {
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>();
     options.add(new SelectItemOption<String>(getLabel(UITeamBPortlet.DEFAULT_VIEW), UITeamBPortlet.DEFAULT_VIEW));
     ConversationState state = ConversationState.getCurrent();
@@ -64,7 +64,7 @@ public class UIChangeView extends BaseUIForm {
         options.add(new SelectItemOption<String>(gr, gr));
       }
     }
-    getUIFormSelectBox(UITaskForm.FIELD_GROUP).setOptions(options).setDefaultValue(UITeamBPortlet.DEFAULT_VIEW);
+    getUIFormSelectBox(UITaskForm.FIELD_GROUP).setOptions(options).setValue(value);
   }
 
   public boolean isManagerGroup(String groupId, String memberShipType) {
