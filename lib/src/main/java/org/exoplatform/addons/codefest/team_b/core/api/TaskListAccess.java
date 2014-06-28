@@ -46,9 +46,16 @@ public class TaskListAccess implements ListAccess<Task> {
     return tasks.toArray(new Task[tasks.size()]);
   }
 
+  public Task[] getAll() throws Exception, IllegalArgumentException {
+    List<Task> tasks = taskManager.load(taskFilter, 0, -1);
+    return tasks.toArray(new Task[tasks.size()]);
+  }
+
   @Override
   public int getSize() throws Exception {
     return taskManager.count(taskFilter);
   }
+  
+  
 
 }

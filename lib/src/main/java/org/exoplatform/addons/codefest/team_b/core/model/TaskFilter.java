@@ -30,7 +30,7 @@ public class TaskFilter {
   public enum TIMEVIEW {
     DAY {
       @Override
-      Calendar getFrom() {
+      public Calendar getFrom() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 1);
@@ -38,7 +38,7 @@ public class TaskFilter {
       }
 
       @Override
-      Calendar getTo() {
+      public Calendar getTo() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
@@ -46,28 +46,28 @@ public class TaskFilter {
       }
     }, WEEK {
       @Override
-      Calendar getFrom() {
+      public Calendar getFrom() {
         Calendar calendar = DAY.getFrom();
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         return calendar;
       }
 
       @Override
-      Calendar getTo() {
+      public Calendar getTo() {
         Calendar calendar = DAY.getTo();
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
         return calendar;
       }
     }, MONTH {
       @Override
-      Calendar getFrom() {
+      public Calendar getFrom() {
         Calendar calendar = DAY.getFrom();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         return calendar;
       }
 
       @Override
-      Calendar getTo() {
+      public Calendar getTo() {
         Calendar calendar = DAY.getTo();
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         return calendar;
@@ -82,18 +82,20 @@ public class TaskFilter {
       }
       return null;
     }
-    abstract Calendar getFrom();
-    abstract Calendar getTo();
+    public abstract Calendar getFrom();
+    public abstract Calendar getTo();
   }
   
   private TIMEVIEW timeview;
   private STATUS status;
+  private String groupId;
+  private String assignee;
   
   public TaskFilter() {
   }
   
-  public TaskFilter status(STATUS timeview) {
-    this.status = timeview;
+  public TaskFilter status(STATUS status) {
+    this.status = status;
     return this;
   }
 
@@ -108,6 +110,24 @@ public class TaskFilter {
   
   public TIMEVIEW timeview() {
     return this.timeview;
+  }
+
+  public TaskFilter groupId(String groupId) {
+    this.groupId = groupId;
+    return this;
+  }
+  
+  public String groupId() {
+    return this.groupId;
+  }
+
+  public TaskFilter assignee(String assignee) {
+    this.assignee = assignee;
+    return this;
+  }
+  
+  public String assignee() {
+    return this.assignee;
   }
   
 

@@ -40,9 +40,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.jcr.NodeIterator;
-
 import org.chromattic.api.query.Ordering;
+import org.chromattic.api.query.Query;
 import org.chromattic.api.query.QueryBuilder;
 import org.chromattic.api.query.QueryResult;
 import org.exoplatform.addons.codefest.team_b.core.api.TaskListAccess;
@@ -55,6 +54,7 @@ import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter;
 import org.exoplatform.addons.codefest.team_b.core.storage.NodeNotFoundException;
 import org.exoplatform.addons.codefest.team_b.core.storage.query.WhereExpression;
+import org.exoplatform.addons.codefest.team_b.core.utils.TaskManagerUtils;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -254,12 +254,69 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
 
   @Override
   public List<Task> load(TaskFilter filter, int offset, int limit) {
-    return null;
+    QueryBuilder<TaskEntity> builder = getSession().createQueryBuilder(TaskEntity.class);
+    WhereExpression whereExpression = new WhereExpression();
+    if(!TaskManagerUtils.isEmpty(filter.assignee())) {
+      IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
+      Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, filter.assignee(), false);
+      //
+      whereExpression.startGroup();
+      whereExpression.equals(TaskEntity.assigneeId, identity.getId());
+      whereExpression.endGroup();
+    } else if (!TaskManagerUtils.isEmpty(filter.groupId())) {
+      whereExpression.startGroup();
+      whereExpression.equals(TaskEntity.groupId, filter.groupId());
+      whereExpression.endGroup();
+    }
+    whereExpression.and().startGroup();
+    whereExpression.equals(TaskEntity.status, filter.status().getName());
+    if (filter.status().equals(Task.STATUS.OPEN)) {
+      whereExpression.or().equals(TaskEntity.status, Task.STATUS.REOPEN.getName());
+    }
+    whereExpression.endGroup();
+
+    //
+    whereExpression.and().startGroup();
+    whereExpression.greaterEq(TaskEntity.updatedTime, filter.timeview().getFrom().getTimeInMillis());
+    whereExpression.and().lessEq(TaskEntity.updatedTime, filter.timeview().getTo().getTimeInMillis());
+    whereExpression.endGroup();
+
+    LOG.info("load-filter::query = " + whereExpression.toString());
+    builder.where(whereExpression.toString());
+
+    builder.orderBy(TaskEntity.priority.getName(), Ordering.DESC);
+    builder.orderBy(TaskEntity.businessValue.getName(), Ordering.DESC);
+    
+
+    List<Task> tasks = new ArrayList<Task>();
+
+    try {
+      //
+      Query<TaskEntity> query = builder.get();
+
+      QueryResult<TaskEntity> results = (limit < 0) ? query.objects()
+                                                   : query.objects((long)offset, (long)limit);
+      LOG.info("getAllByAssignee::size = " + results.size());
+      
+      while (results.hasNext()) {
+        TaskEntity currentTask = results.next();
+        Task t = new Task();
+        fillModelFromEntity(currentTask, t);
+        tasks.add(t);
+      }
+    } catch (Exception e) {
+      LOG.info("Failed query", e.getMessage());
+    }
+    return tasks;
   }
 
   @Override
   public int count(TaskFilter filter) {
-    return 0;
+    try {
+      return find(filter).getSize();
+    } catch (Exception e) {
+      return 0;
+    }
   }
 
   @Override
@@ -293,7 +350,7 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
   @Override
   public List<Task> getAllByReporter(String reporter) {
     IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
-    Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, reporter);
+    Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, reporter, false);
     
     QueryBuilder<TaskEntity> builder = getSession().createQueryBuilder(TaskEntity.class);
     WhereExpression whereExpression = new WhereExpression();
@@ -332,7 +389,7 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
   @Override
   public List<Task> getAllByAssignee(String assignee) {
     IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
-    Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, assignee);
+    Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, assignee, false);
     
     QueryBuilder<TaskEntity> builder = getSession().createQueryBuilder(TaskEntity.class);
     WhereExpression whereExpression = new WhereExpression();
@@ -370,7 +427,7 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
   @Override
   public void update(String updater, Task task, String... propertyNames) {
     IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
-    Identity identityUpdater = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, updater);
+    Identity identityUpdater = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, updater, false);
     update(identityUpdater, task, propertyNames);
   }
 

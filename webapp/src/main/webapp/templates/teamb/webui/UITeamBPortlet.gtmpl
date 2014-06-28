@@ -10,6 +10,10 @@ import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "jsTeamb")
 		.require("SHARED/TaskDragDrop", "dragDrop")
     .addScripts("jsTeamb.init('$uicomponent.id');jsTeamb.initTooltip('$uicomponent.id');dragDrop.init('TaskContainer') ;");
+
+	List opens = uicomponent.getOpenedTasks();
+	List inprogress = uicomponent.getInProgressTasks();
+	List dones = uicomponent.getDoneTasks();
 %>
 	<div class="uiTaskContainer" id="uiTaskContainer">
 	
@@ -56,11 +60,6 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 				</thead>
 				<tbody>
 					<tr>
-						<%
-							  def opens = uicomponent.getOpenedTasks();
-							  def inprogress = uicomponent.getOpenedTasks();
-							  def dones = uicomponent.getOpenedTasks();
-						%>
 						<td>
 							<ul class="open-items" data-action="<%=uicomponent.event("DragDrop")%>" data-action-type="open">
 							<%

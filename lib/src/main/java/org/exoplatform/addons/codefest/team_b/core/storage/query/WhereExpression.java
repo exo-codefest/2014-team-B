@@ -152,17 +152,23 @@ public class WhereExpression {
   }
 
   public WhereExpression not() {
-    getStringBuilder().append("NOT ");
+    if (getStringBuilder().length() > 0) {
+      getStringBuilder().append("NOT ");
+    }
     return this;
   }
 
   public WhereExpression or() {
-    getStringBuilder().append("OR ");
+    if (getStringBuilder().length() > 0) {
+      getStringBuilder().append("OR ");
+    }
     return this;
   }
 
   public WhereExpression and() {
-    getStringBuilder().append("AND ");
+    if (getStringBuilder().length() > 0) {
+      getStringBuilder().append("AND ");
+    }
     return this;
   }
 

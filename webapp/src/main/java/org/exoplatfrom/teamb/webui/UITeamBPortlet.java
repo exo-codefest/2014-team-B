@@ -16,12 +16,13 @@
  */
 package org.exoplatfrom.teamb.webui;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import javax.portlet.PortletMode;
 
+import org.exoplatform.addons.codefest.team_b.core.api.TaskListAccess;
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter;
@@ -33,12 +34,12 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
-import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -50,7 +51,6 @@ import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
-import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatfrom.teamb.webui.form.UIChangeView;
@@ -128,36 +128,42 @@ public class UITeamBPortlet extends UIPortletApplication {
     return tabActive ;
   }
 
-  protected List<Task> getOpenedTasks() {
-    TaskFilter filter = new TaskFilter();
-    filter.timeview(TIMEVIEW.getTimeView(tabActive))
-          .status(Task.STATUS.OPEN);
-    
+  protected List<Task> getOpenedTasks() throws Exception {
+    TaskFilter filter = commonTaskFilter().status(Task.STATUS.OPEN);
+
     TaskManager tm = CommonsUtils.getService(TaskManager.class);
-    List<Task> openedTasks = tm.getAll();
+    List<Task> openedTasks = Arrays.asList(((TaskListAccess) tm.find(filter)).getAll());
     return openedTasks;
   }
-  
-  protected List<Task> getInProgressTasks() {
+
+  private TaskFilter commonTaskFilter() {
     TaskFilter filter = new TaskFilter();
-    filter.timeview(TIMEVIEW.getTimeView(tabActive))
-          .status(Task.STATUS.IN_PROGRESS);
-    
+    filter.timeview(TIMEVIEW.getTimeView(tabActive));
+    if (!DEFAULT_VIEW.equals(groupToViewId)) {
+      filter.groupId(groupToViewId);
+    } else {
+      filter.assignee(ConversationState.getCurrent().getIdentity().getUserId());
+    }
+    return filter;
+  }
+
+  protected List<Task> getInProgressTasks() throws Exception {
+    TaskFilter filter = commonTaskFilter().status(Task.STATUS.IN_PROGRESS);
+
     TaskManager tm = CommonsUtils.getService(TaskManager.class);
-    List<Task> inProgressTasks = tm.getAll();
+    ListAccess<Task> listAccess = tm.find(filter);
+    List<Task> inProgressTasks = Arrays.asList(((TaskListAccess) listAccess).getAll());
     return inProgressTasks;
   }
 
-  protected List<Task> getDoneTasks() {
-    TaskFilter filter = new TaskFilter();
-    filter.timeview(TIMEVIEW.getTimeView(tabActive))
-          .status(Task.STATUS.RESOLVED);
-    
+  protected List<Task> getDoneTasks() throws Exception {
+    TaskFilter filter = commonTaskFilter().status(Task.STATUS.RESOLVED);
+
     TaskManager tm = CommonsUtils.getService(TaskManager.class);
-    List<Task> doneTasks = tm.getAll();
+    List<Task> doneTasks = Arrays.asList(((TaskListAccess) tm.find(filter)).getAll());
     return doneTasks;
-    
   }
+
   public void createCalendarEvent(String currentUser, String summary, Date dueDate, String groupId, String priority) throws Exception{
     CalendarService calendarService = CommonsUtils.getService(CalendarService.class);
     String calendarId = getCalendarByGroupId(groupId).getId();
