@@ -16,7 +16,20 @@
  */
 package org.exoplatfrom.teamb.webui.form;
 
+import java.util.Arrays;
+
+import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.social.core.activity.model.ExoSocialActivity;
+import org.exoplatform.social.core.manager.ActivityManager;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.social.webui.activity.UIActivitiesContainer;
+import org.exoplatform.social.webui.composer.UIComposer.PostContext;
+import org.exoplatform.social.webui.profile.UIUserActivitiesDisplay.DisplayMode;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -57,6 +70,23 @@ public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
 
   public void setTask(Task task) {
     this.task = task;
+  }
+  
+  public void setTaskActivity(Task task) throws Exception {
+    CalendarService calendarService = CommonsUtils.getService(CalendarService.class);
+    SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
+    ActivityManager activityManager = CommonsUtils.getService(ActivityManager.class);
+    CalendarEvent calendarEvent = calendarService.getEventById(task.getTaskId());
+    ExoSocialActivity activity = activityManager.getActivity(calendarEvent.getActivityId());
+    Space space = spaceService.getSpaceByGroupId(task.getValue(TaskEntity.groupId));
+    if (activity != null && space != null) {
+      UIActivitiesContainer activitiesContainer = addChild(UIActivitiesContainer.class, null, null);
+      activitiesContainer.setSpace(space);
+      activitiesContainer.setActivityList(Arrays.asList(activity));
+      activitiesContainer.setPostContext(PostContext.SPACE);
+      activitiesContainer.setSelectedDisplayMode(DisplayMode.ALL_ACTIVITIES.toString());
+    }
+    
   }
 
   static public class EditTaskActionListener extends EventListener<UIViewTaskForm> {

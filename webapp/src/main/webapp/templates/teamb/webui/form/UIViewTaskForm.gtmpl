@@ -203,4 +203,8 @@ Task task = uicomponent.getTask();
     <button onclick="<%=uicomponent.event("Close")%>" class="btn" type="button">$closeLabel</button>
   </div>
   <%uiform.end();%>
+  <%
+    uicomponent.renderChild(org.exoplatform.social.webui.activity.UIActivitiesContainer.class);
+  %>
+<div><span></span></div>
 </div>
