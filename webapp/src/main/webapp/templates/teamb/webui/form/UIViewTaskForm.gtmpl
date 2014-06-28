@@ -16,7 +16,6 @@ String completedDateLabel = _ctx.appRes("UIViewTaskForm.label.CompletedDate");
 String descriptionLabel   = _ctx.appRes("UIViewTaskForm.label.Description");
 String noteLabel          = _ctx.appRes("UIViewTaskForm.label.Note");
 String editLabel          = _ctx.appRes("UIViewTaskForm.label.Edit");
-String cancelLabel        = _ctx.appRes("UIViewTaskForm.label.Cancel");
 String saveLabel          = _ctx.appRes("UITaskForm.action.Save");
 String closeLabel         = _ctx.appRes("UITaskForm.action.Close");
 Task task = uicomponent.getTask();
@@ -150,7 +149,7 @@ Task task = uicomponent.getTask();
     </table>
   </div>
   <div class="uiAction">
-    <button onclick="<%=uicomponent.event("EditTask", "the taskId")%>" class="btn" type="button">$editLabel</button>
+    <button onclick="<%=uicomponent.event("EditTask")%>" class="btn" type="button">$editLabel</button>
     <button onclick="<%=uicomponent.event("Close")%>" class="btn" type="button">$closeLabel</button>
   </div>
   <% } else { %>

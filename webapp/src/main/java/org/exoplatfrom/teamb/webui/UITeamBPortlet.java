@@ -221,7 +221,7 @@ public class UITeamBPortlet extends UIPortletApplication {
         }
       }
       if (list.isEmpty()) {
-        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.groupNotFound", new String[]{}, ApplicationMessage.WARNING));
+        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.taskNotFound", new String[]{}, ApplicationMessage.WARNING));
         ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return;
       }
@@ -238,10 +238,19 @@ public class UITeamBPortlet extends UIPortletApplication {
   static public class EditTaskActionListener extends EventListener<UITeamBPortlet> {
     public void execute(Event<UITeamBPortlet> event) throws Exception {
       UITeamBPortlet teamBPortlet = event.getSource();
-      String taskId = event.getRequestContext().getRequestParameter(OBJECTID);
+      WebuiRequestContext context  = event.getRequestContext();
+      String taskId = context.getRequestParameter(OBJECTID);
+      TaskManager tm = CommonsUtils.getService(TaskManager.class);
+      Task task = tm.get(taskId);
+      if(task == null) {
+        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.taskNotFound", new String[]{}, ApplicationMessage.WARNING));
+        ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
+        return;
+      }
+      
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
       UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
-      taskForm.setTaskId(taskId).setId("UIEditTaskForm");
+      taskForm.setTask(org.exoplatfrom.teamb.webui.Utils.fillPropertiesTask(task)).setId("UIEditTaskForm");
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }
   }
@@ -249,11 +258,22 @@ public class UITeamBPortlet extends UIPortletApplication {
   static public class ViewTaskActionListener extends EventListener<UITeamBPortlet> {
     public void execute(Event<UITeamBPortlet> event) throws Exception {
       UITeamBPortlet teamBPortlet = event.getSource();
-      String taskId = event.getRequestContext().getRequestParameter(OBJECTID);
+      WebuiRequestContext context  = event.getRequestContext();
+      
+      String taskId = context.getRequestParameter(OBJECTID);
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
+      
+      TaskManager tm = CommonsUtils.getService(TaskManager.class);
+      Task task = tm.get(taskId);
+      if(task == null) {
+        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.groupNotFound", new String[]{}, ApplicationMessage.WARNING));
+        ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
+        return;
+      }
+      
       UIViewTaskForm taskForm = popupAction.activate(UIViewTaskForm.class, 800);
-      taskForm.setTaskId(taskId);
-      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
+      taskForm.setTask(org.exoplatfrom.teamb.webui.Utils.fillPropertiesTask(task));
+      context.addUIComponentToUpdateByAjax(popupAction);
     }
   }
 

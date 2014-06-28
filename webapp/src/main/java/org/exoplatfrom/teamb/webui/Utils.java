@@ -47,28 +47,28 @@ public class Utils {
     IdentityManager idm = CommonsUtils.getService(IdentityManager.class);
     SpaceService ss = CommonsUtils.getService(SpaceService.class);
     
-    Identity reporter = idm.getIdentity((String)task.get(TaskEntity.reporterId), false);
+    Identity reporter = idm.getIdentity(task.getValue(TaskEntity.reporterId), false);
     
     // get assignee info
-    Identity assignee = idm.getIdentity((String)task.get(TaskEntity.assigneeId), false);
+    Identity assignee = idm.getIdentity(task.getValue(TaskEntity.assigneeId), false);
     
     // get group info
-    Space sp = ss.getSpaceByGroupId((String)task.get(TaskEntity.groupId));
+    Space sp = ss.getSpaceByGroupId(task.getValue(TaskEntity.groupId));
     
     Task t = new Task();
-    t.put(SUMMARY, (String)task.get(TaskEntity.title));
+    t.put(SUMMARY, task.getValue(TaskEntity.title));
     t.put(REPORTER, reporter.getProfile().getFullName());
     t.put(ASSIGNEE, assignee.getProfile().getFullName());
-    t.put(PRIORITY, (String)task.get(TaskEntity.priority));
-    t.put(BV, (String)task.get(TaskEntity.businessValue));
-    t.put(STATUS, (String)task.get(TaskEntity.status));
+    t.put(PRIORITY, task.getValue(TaskEntity.priority));
+    t.put(BV, task.getValue(TaskEntity.businessValue));
+    t.put(STATUS, task.getValue(TaskEntity.status));
     t.put(GROUP, sp.getDisplayName());
-    t.put(COMPLETENESS, (String)task.get(TaskEntity.workLogged));
-    t.put(CREATED_DATE, (String)task.get(TaskEntity.createdTime));
-    t.put(DUE_DATE, (String)task.get(TaskEntity.resolvedTime));
-    t.put(COMPLETED_DATE, (String)task.get(TaskEntity.resolvedTime));
-    t.put(DESCRIPTION, (String)task.get(TaskEntity.description));
-    t.put(NOTE,(String)task.get(TaskEntity.resolution));
+    t.put(COMPLETENESS, task.getValue(TaskEntity.workLogged));
+    t.put(CREATED_DATE,  task.getValue(TaskEntity.createdTime));
+    t.put(DUE_DATE,  task.getValue(TaskEntity.resolvedTime));
+    t.put(COMPLETED_DATE, task.getValue(TaskEntity.resolvedTime));
+    t.put(DESCRIPTION, task.getValue(TaskEntity.description));
+    t.put(NOTE, task.getValue(TaskEntity.resolution));
         
     return t;
   }

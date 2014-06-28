@@ -55,7 +55,7 @@ import org.exoplatfrom.teamb.webui.UITeamBPortlet;
 })
 public class UITaskForm extends BaseUIForm implements UIPopupComponent {
 
-  private String taskId = "";
+  private Task task = null;
 
   final public static String FIELD_SUMMARY        = "Summary";
   final public static String FIELD_CREATED_DATE   = "CreatedDate";
@@ -129,12 +129,12 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
   public void deActivate() {
   }
 
-  public String getTaskId() {
-    return taskId;
+  public Task getTask() {
+    return task;
   }
 
-  public UITaskForm setTaskId(String taskId) {
-    this.taskId = taskId;
+  public UITaskForm setTask(Task task) {
+    this.task = task;
     return this;
   }
   
