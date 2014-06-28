@@ -14,6 +14,7 @@ String dueDateLabel       = _ctx.appRes("UIViewTaskForm.label.DueDate");
 String completenessLabel  = _ctx.appRes("UIViewTaskForm.label.Completeness");
 String completedDateLabel = _ctx.appRes("UIViewTaskForm.label.CompletedDate");
 String descriptionLabel   = _ctx.appRes("UIViewTaskForm.label.Description");
+String noneLabel          = _ctx.appRes("UIViewTaskForm.label.None");
 String noteLabel          = _ctx.appRes("UIViewTaskForm.label.Note");
 String editLabel          = _ctx.appRes("UIViewTaskForm.label.Edit");
 String saveLabel          = _ctx.appRes("UITaskForm.action.Save");
@@ -50,7 +51,11 @@ Task task = uicomponent.getTask();
           <div class="control-group">
            <div class="control-label" >$assigneeLabel:</div>
            <div class="controls">
+             <% if (task.get(Utils.ASSIGNEE) != null) { %>
              <%=task.get(Utils.ASSIGNEE)%>
+             <% } else { %>
+               $noneLabel
+             <% } %>
            </div>
           </div>
         </td>
@@ -60,7 +65,11 @@ Task task = uicomponent.getTask();
           <div class="control-group">
            <div class="control-label" >$priorityLabel:</div>
            <div class="controls">
+             <% if (task.get(Utils.PRIORITY) != null) { %>
              <%=task.get(Utils.PRIORITY)%>
+             <% } else { %>
+               $noneLabel
+             <% } %>
            </div>
           </div>
         </td>
@@ -68,7 +77,11 @@ Task task = uicomponent.getTask();
           <div class="control-group">
            <div class="control-label" >$statusLabel:</div>
            <div class="controls">
-             <%=task.get(Utils.STATUS)%>
+             <% if (task.get(Utils.BV) != null) { %>
+             <%=task.get(Utils.BV)%>
+             <% } else { %>
+               $noneLabel
+             <% } %>
            </div>
           </div>
         </td>
@@ -78,7 +91,11 @@ Task task = uicomponent.getTask();
           <div class="control-group">
            <div class="control-label" >$bvLabel:</div>
            <div class="controls">
+             <% if (task.get(Utils.BV) != null) { %>
              <%=task.get(Utils.BV)%>
+             <% } else { %>
+               $noneLabel
+             <% } %>
            </div>
           </div>
         </td>
@@ -86,7 +103,11 @@ Task task = uicomponent.getTask();
           <div class="control-group">
            <div class="control-label" >$dueDateLabel:</div>
            <div class="controls">
+             <% if (task.get(Utils.DUE_DATE) != null) { %>
              <%=task.get(Utils.DUE_DATE)%>
+             <% } else { %>
+               $noneLabel
+             <% } %>
            </div>
           </div>
         </td>
@@ -96,7 +117,11 @@ Task task = uicomponent.getTask();
           <div class="control-group">
            <div class="control-label" >$createDateLabel:</div>
            <div class="controls">
+             <% if (task.get(Utils.CREATED_DATE) != null) { %>
              <%=task.get(Utils.CREATED_DATE)%>
+             <% } else { %>
+               $noneLabel
+             <% } %>
            </div>
           </div>
         </td>
@@ -104,7 +129,11 @@ Task task = uicomponent.getTask();
           <div class="control-group">
            <div class="control-label" >$completenessLabel:</div>
            <div class="controls">
+             <% if (task.get(Utils.COMPLETENESS) != null) { %>
              <%=task.get(Utils.COMPLETENESS)%>
+             <% } else { %>
+               $noneLabel
+             <% } %>
            </div>
           </div>
         </td>
@@ -114,7 +143,11 @@ Task task = uicomponent.getTask();
           <div class="control-group">
            <div class="control-label" >$groupLabel:</div>
            <div class="controls">
+             <% if (task.get(Utils.GROUP) != null) { %>
              <%=task.get(Utils.GROUP)%>
+             <% } else { %>
+               $noneLabel
+             <% } %>
            </div>
           </div>
         </td>
@@ -122,7 +155,11 @@ Task task = uicomponent.getTask();
           <div class="control-group">
            <div class="control-label" >$completedDateLabel:</div>
            <div class="controls">
+             <% if (task.get(Utils.COMPLETED_DATE) != null) { %>
              <%=task.get(Utils.COMPLETED_DATE)%>
+             <% } else { %>
+               $noneLabel
+             <% } %>
            </div>
           </div>
         </td>
@@ -132,7 +169,11 @@ Task task = uicomponent.getTask();
           <div class="control-group">
            <div class="control-label" >$descriptionLabel:</div>
            <div class="controls">
+             <% if (task.get(Utils.DESCRIPTION) != null) { %>
              <%=task.get(Utils.DESCRIPTION)%>
+             <% } else { %>
+               $noneLabel
+             <% } %>
            </div>
           </div>
         </td>
@@ -142,7 +183,11 @@ Task task = uicomponent.getTask();
           <div class="control-group">
            <div class="control-label" >$noteLabel:</div>
            <div class="controls">
+             <% if (task.get(Utils.NOTE) != null) { %>
              <%=task.get(Utils.NOTE)%>
+             <% } else { %>
+               $noneLabel
+             <% } %>
            </div>
           </div>
         </td>

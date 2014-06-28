@@ -212,26 +212,12 @@ public class UITeamBPortlet extends UIPortletApplication {
     public void execute(Event<UITeamBPortlet> event) throws Exception {
       UITeamBPortlet teamBPortlet = event.getSource();
       WebuiRequestContext context  = event.getRequestContext();
-      List<SelectItemOption<String>> list = new ArrayList<SelectItemOption<String>>();
       Identity identity = ConversationState.getCurrent().getIdentity();
-      List<String> spaces = new ArrayList<String>();
-      for (MembershipEntry membership : identity.getMemberships()) {
-        String gr = membership.getGroup();
-        if (gr.startsWith("/spaces") && ! spaces.contains(gr)) {
-          list.add(new SelectItemOption<String>(gr, gr));
-          spaces.add(gr);
-        }
-      }
-      if (list.isEmpty()) {
-        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.taskNotFound", new String[]{}, ApplicationMessage.WARNING));
-        ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
-        return;
-      }
       
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
       UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
       taskForm.setId("UIAddTaskForm");
-      taskForm.setGroups(list);
+      taskForm.setTask(null);
       taskForm.initForm(identity.getUserId());
       context.addUIComponentToUpdateByAjax(teamBPortlet);
     }
@@ -254,7 +240,7 @@ public class UITeamBPortlet extends UIPortletApplication {
       UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
 //      taskForm.setTask(org.exoplatfrom.teamb.webui.Utils.fillPropertiesTask(task)).setId("UIEditTaskForm");
       taskForm.setTask(task);
-      taskForm.initForm();
+      taskForm.initForm(null);
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }
   }
@@ -276,7 +262,7 @@ public class UITeamBPortlet extends UIPortletApplication {
       
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
       UIViewTaskForm taskForm = popupAction.activate(UIViewTaskForm.class, 800);
-      taskForm.setTask(org.exoplatfrom.teamb.webui.Utils.fillPropertiesTask(task));
+      taskForm.setTask(task);
       context.addUIComponentToUpdateByAjax(popupAction);
     }
   }

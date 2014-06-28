@@ -22,6 +22,7 @@ import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
@@ -81,7 +82,11 @@ public class Utils {
     IdentityManager idm = CommonsUtils.getService(IdentityManager.class);
     return idm.getIdentity(id, false);
   }
-  
+
+  public static Identity getIdentityByRemoteId(String remoteId) {
+    IdentityManager idm = CommonsUtils.getService(IdentityManager.class);
+    return idm.getOrCreateIdentity(OrganizationIdentityProvider.NAME, remoteId, false);
+  }
   
   private static Pattern weekMatcher   = Pattern.compile("([0-9]w)+$");
   private static Pattern dayMatcher    = Pattern.compile("([0-9]d)+$");

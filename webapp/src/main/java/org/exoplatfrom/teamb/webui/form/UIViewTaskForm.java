@@ -26,6 +26,7 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatfrom.teamb.webui.UITeamBPortlet;
+import org.exoplatfrom.teamb.webui.Utils;
 
 @ComponentConfigs({
   @ComponentConfig(lifecycle = UIFormLifecycle.class, 
@@ -51,7 +52,7 @@ public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
   }
   
   public Task getTask() {
-    return task;
+    return Utils.fillPropertiesTask(task);
   }
 
   public void setTask(Task task) {
@@ -61,14 +62,13 @@ public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
   static public class EditTaskActionListener extends EventListener<UIViewTaskForm> {
     public void execute(Event<UIViewTaskForm> event) throws Exception {
       UIViewTaskForm viewTaskForm =  event.getSource();
-      Task task = viewTaskForm.getTask();
       UITeamBPortlet teamBPortlet = viewTaskForm.getAncestorOfType(UITeamBPortlet.class);
       teamBPortlet.cancelAction();
       //
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
       UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
-      taskForm.setTask(task).setId("UIEditTaskForm");
-      taskForm.initForm();
+      taskForm.setTask(viewTaskForm.task).setId("UIEditTaskForm");
+      taskForm.initForm(null);
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }
   }

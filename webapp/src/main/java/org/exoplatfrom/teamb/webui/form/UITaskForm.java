@@ -23,13 +23,16 @@ import java.util.List;
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
-import org.exoplatform.addons.codefest.team_b.core.utils.TaskManagerUtils;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.portal.application.PortalRequestContext;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -110,43 +113,35 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     getUIFormSelectBox(FIELD_GROUP).setOptions(list);
   }
   
-  public void initForm() {
-    Task selectedTask = TaskManagerUtils.getTaskById(this.task.getValue(TaskEntity.id));
-    if (selectedTask != null) {
-      
-      //
-      getUIStringInput(FIELD_SUMMARY).setValue(selectedTask.getValue(TaskEntity.title));
-      getUIFormTextAreaInput(FIELD_DESCRIPTION).setValue(selectedTask.getValue(TaskEntity.description));
-      
-      getUIFormSelectBox(FIELD_PRIORITY).setSelectedValues(new String[] {selectedTask.getValue(TaskEntity.priority)});
-      
-      String reporterId = selectedTask.getValue(TaskEntity.reporterId);
-      Identity reporterIdentity = Utils.getIdentityById(reporterId);
-      
-      getUIStringInput(FIELD_REPORTER).setValue(reporterIdentity.getProfile().getFullName());
-      getUIStringInput(FIELD_REPORTER).setDisabled(true);
-      
-      getUIFormSelectBox(FIELD_ASSIGNEE).setSelectedValues(new String[] {selectedTask.getValue(TaskEntity.assigneeId)});
-      
-      //
-      getUIFormSelectBox(FIELD_GROUP).setSelectedValues(new String[] {selectedTask.getValue(TaskEntity.groupId)});
-      
-      //
-      
-      getUIStringInput(FIELD_BV).setValue(selectedTask.getValue(TaskEntity.businessValue) + "");
-      
-      getUIFormDateTimeInput(FIELD_DUE_DATE).setValue(selectedTask.getValue(TaskEntity.estimation));
-      getUIFormDateTimeInput(FIELD_COMPLETED_DATE).setValue(selectedTask.getValue(TaskEntity.resolvedTime) + "");
-     
-      getUIStringInput(FIELD_BV).setValue(selectedTask.getValue(TaskEntity.workLogged));
-    }
-  }
-  
   public void initForm(String currentUser) {
+    if (currentUser == null && this.task != null) {
+      String reporterId = this.task.getValue(TaskEntity.reporterId);
+      currentUser = Utils.getIdentityById(reporterId).getRemoteId();
+    }
+    
+    org.exoplatform.services.security.Identity identity = ConversationState.getCurrent().getIdentity();
+    List<SelectItemOption<String>> grougList = new ArrayList<SelectItemOption<String>>();
+    List<String> spaces = new ArrayList<String>();
+    for (MembershipEntry membership : identity.getMemberships()) {
+      String gr = membership.getGroup();
+      if (gr.startsWith("/spaces") && ! spaces.contains(gr)) {
+        grougList.add(new SelectItemOption<String>(gr, gr));
+        spaces.add(gr);
+      }
+    }
+
+    getUIFormSelectBox(FIELD_GROUP).setOptions(grougList);
+    
+    String groupId = null;
+    if (this.task != null) {
+      groupId = this.task.getValue(TaskEntity.groupId);  
+    } else {
+      groupId = getUIFormSelectBox(FIELD_GROUP).getValue();
+    }
+    
     getUIStringInput(FIELD_REPORTER).setValue(currentUser);
     getUIStringInput(FIELD_REPORTER).setDisabled(true);
     
-    String groupId = getUIFormSelectBox(FIELD_GROUP).getValue();
     SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
     Space space = spaceService.getSpaceByGroupId(groupId);
     List<SelectItemOption<String>> list = new ArrayList<SelectItemOption<String>>();
@@ -162,10 +157,26 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       getUIFormSelectBox(FIELD_ASSIGNEE).setDisabled(true);
     }
     
-    //
-    getUIStringInput(FIELD_SUMMARY).setValue(this.task.getValue(TaskEntity.title));
-    getUIFormTextAreaInput(FIELD_DESCRIPTION).setValue(this.task.getValue(TaskEntity.description));
-    getUIStringInput(FIELD_BV).setValue(this.task.getValue(TaskEntity.businessValue) + "");
+    if (this.task != null) {
+      //
+      getUIStringInput(FIELD_SUMMARY).setValue(this.task.getValue(TaskEntity.title));
+      getUIFormTextAreaInput(FIELD_DESCRIPTION).setValue(this.task.getValue(TaskEntity.description));
+      
+      getUIFormSelectBox(FIELD_PRIORITY).setValue(this.task.getValue(TaskEntity.priority));
+      
+      getUIFormSelectBox(FIELD_ASSIGNEE).setValue(this.task.getValue(TaskEntity.assigneeId));
+      
+      //
+      getUIFormSelectBox(FIELD_GROUP).setValue(this.task.getValue(TaskEntity.groupId));
+      
+      //
+      getUIStringInput(FIELD_BV).setValue(this.task.getValue(TaskEntity.businessValue) + "");
+      
+      getUIFormDateTimeInput(FIELD_DUE_DATE).setValue(this.task.getValue(TaskEntity.estimation));
+      getUIFormDateTimeInput(FIELD_COMPLETED_DATE).setValue(this.task.getValue(TaskEntity.resolvedTime) + "");
+     
+      getUIStringInput(FIELD_BV).setValue(this.task.getValue(TaskEntity.workLogged));
+    }
   }
 
   @Override
@@ -226,6 +237,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       tm.save(reporterIdentity, task);
       
       teamBPortlet.cancelAction();
+      event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
     }
   }
 
