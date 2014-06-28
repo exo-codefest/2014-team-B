@@ -28,10 +28,10 @@ import org.exoplatform.addons.codefest.team_b.core.storage.PropertyLiteralExpres
  * Jun 26, 2014  
  */
 public class TaskFilter {
-  public enum TIMEVIEW {
+  public enum TimeLine {
     DAY {
       @Override
-      public Calendar getFrom() {
+      public Calendar from() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 1);
@@ -39,55 +39,56 @@ public class TaskFilter {
       }
 
       @Override
-      public Calendar getTo() {
+      public Calendar to() {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.add(Calendar.DATE, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 59);
-        return Calendar.getInstance();
+        return calendar;
       }
     }, WEEK {
       @Override
-      public Calendar getFrom() {
-        Calendar calendar = DAY.getFrom();
+      public Calendar from() {
+        Calendar calendar = DAY.from();
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         return calendar;
       }
 
       @Override
-      public Calendar getTo() {
-        Calendar calendar = DAY.getTo();
+      public Calendar to() {
+        Calendar calendar = DAY.to();
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
         return calendar;
       }
     }, MONTH {
       @Override
-      public Calendar getFrom() {
-        Calendar calendar = DAY.getFrom();
+      public Calendar from() {
+        Calendar calendar = DAY.from();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         return calendar;
       }
 
       @Override
-      public Calendar getTo() {
-        Calendar calendar = DAY.getTo();
+      public Calendar to() {
+        Calendar calendar = DAY.to();
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         return calendar;
       }
     };
     
-    public static TIMEVIEW getTimeView(String name) {
-      for (TIMEVIEW timeView : values()) {
+    public static TimeLine getTimeView(String name) {
+      for (TimeLine timeView : values()) {
         if (timeView.name().equalsIgnoreCase(name)) {
           return timeView;
         }
       }
       return null;
     }
-    public abstract Calendar getFrom();
-    public abstract Calendar getTo();
+    public abstract Calendar from();
+    public abstract Calendar to();
   }
   
-  private TIMEVIEW timeview;
+  private TimeLine timeLine;
   private STATUS status;
   private String groupId;
   private String assignee;
@@ -106,13 +107,13 @@ public class TaskFilter {
     return this.status;
   }
 
-  public TaskFilter timeview(TIMEVIEW timeview) {
-    this.timeview = timeview;
+  public TaskFilter timeLine(TimeLine timeLine) {
+    this.timeLine = timeLine;
     return this;
   }
   
-  public TIMEVIEW timeview() {
-    return this.timeview;
+  public TimeLine timeLine() {
+    return this.timeLine;
   }
 
   public TaskFilter groupId(String groupId) {

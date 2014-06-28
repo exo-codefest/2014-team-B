@@ -16,6 +16,7 @@
  */
 package org.exoplatform.addons.codefest.team_b.core.utils;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
@@ -48,6 +49,7 @@ public class TaskManagerUtils {
     Task task = manager.get(taskId);
     if (task != null) {
       task.setValue(TaskEntity.status, Task.STATUS.RESOLVED.getName());
+      task.setValue(TaskEntity.resolvedTime, Calendar.getInstance().getTimeInMillis());
       manager.update(updater, task, TaskEntity.status.getPropertyName());
     }
   }
@@ -65,6 +67,7 @@ public class TaskManagerUtils {
     Task task = manager.get(taskId);
     if (task != null) {
       task.setValue(TaskEntity.status, Task.STATUS.IN_PROGRESS.getName());
+      task.setValue(TaskEntity.updatedTime, Calendar.getInstance().getTimeInMillis());
       manager.update(updater, task, TaskEntity.status.getPropertyName());
     }
   }
@@ -131,7 +134,7 @@ public class TaskManagerUtils {
     String remoteId = ConversationState.getCurrent().getIdentity().getUserId();
     
     IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
-    Identity reporter = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, remoteId);
+    Identity reporter = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, remoteId, false);
     
     return manager.save(reporter, task);
   }

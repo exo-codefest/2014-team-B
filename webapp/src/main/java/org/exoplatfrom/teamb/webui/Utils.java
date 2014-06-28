@@ -67,10 +67,10 @@ public class Utils {
     t.put(PRIORITY, task.getValue(TaskEntity.priority));
     t.put(BV, task.getValue(TaskEntity.businessValue));
     t.put(STATUS, task.getValue(TaskEntity.status));
-    t.put(GROUP, sp.getDisplayName());
-    t.put(COMPLETENESS, task.getValue(TaskEntity.workLogged));
+    t.put(GROUP, task.getValue(TaskEntity.groupId));
+    t.put(COMPLETENESS, task.getValue(TaskEntity.completeness));
     t.put(CREATED_DATE,  task.getValue(TaskEntity.createdTime));
-    t.put(DUE_DATE,  task.getValue(TaskEntity.resolvedTime));
+    t.put(DUE_DATE,  task.getValue(TaskEntity.dueDateTime));
     t.put(COMPLETED_DATE, task.getValue(TaskEntity.resolvedTime));
     t.put(DESCRIPTION, task.getValue(TaskEntity.description));
     t.put(NOTE, task.getValue(TaskEntity.resolution));

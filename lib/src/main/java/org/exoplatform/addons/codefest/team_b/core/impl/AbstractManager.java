@@ -233,6 +233,7 @@ public abstract class AbstractManager {
       //
       return query.execute().getNodes();
     } catch (Exception ex) {
+      LOG.info("Failed to execute query = " + statement, ex.getMessage());
       return null;
     }
   }

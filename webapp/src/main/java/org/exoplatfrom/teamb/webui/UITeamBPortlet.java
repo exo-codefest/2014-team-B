@@ -28,7 +28,7 @@ import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
 import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter;
-import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter.TIMEVIEW;
+import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter.TimeLine;
 import org.exoplatform.addons.codefest.team_b.core.utils.TaskManagerUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -69,6 +69,7 @@ import org.exoplatfrom.teamb.webui.form.UIViewTaskForm;
      events = {
      @EventConfig(listeners = UITeamBPortlet.AddTaskActionListener.class ),
      @EventConfig(listeners = UITeamBPortlet.EditTaskActionListener.class),
+     @EventConfig(listeners = UITeamBPortlet.RemoveTaskActionListener.class),
      @EventConfig(listeners = UITeamBPortlet.ViewDayActionListener.class ),
      @EventConfig(listeners = UITeamBPortlet.ViewWeekActionListener.class ),
      @EventConfig(listeners = UITeamBPortlet.ViewMonthActionListener.class ),
@@ -143,7 +144,7 @@ public class UITeamBPortlet extends UIPortletApplication {
 
   private TaskFilter commonTaskFilter() {
     TaskFilter filter = new TaskFilter();
-    filter.timeview(TIMEVIEW.getTimeView(tabActive));
+    filter.timeLine(TimeLine.getTimeView(tabActive));
     if (!DEFAULT_VIEW.equals(groupToViewId)) {
       filter.groupId(groupToViewId);
     } else {
@@ -238,7 +239,7 @@ public class UITeamBPortlet extends UIPortletApplication {
       }
 
       if (list.isEmpty()) {
-        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.taskNotFound", new String[]{}, ApplicationMessage.WARNING));
+        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.groupNotFound", new String[]{}, ApplicationMessage.WARNING));
         ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return;
       }
@@ -246,8 +247,7 @@ public class UITeamBPortlet extends UIPortletApplication {
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
       UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
       taskForm.setId("UIAddTaskForm");
-      taskForm.setTask(null);
-      taskForm.initForm(identity.getUserId());
+      taskForm.initForm();
       context.addUIComponentToUpdateByAjax(teamBPortlet);
     }
   }
@@ -267,10 +267,25 @@ public class UITeamBPortlet extends UIPortletApplication {
       
       UIPopupAction popupAction = teamBPortlet.getChild(UIPopupAction.class);
       UITaskForm taskForm = popupAction.activate(UITaskForm.class, 700);
-//      taskForm.setTask(org.exoplatfrom.teamb.webui.Utils.fillPropertiesTask(task)).setId("UIEditTaskForm");
       taskForm.setTask(task);
-      taskForm.initForm(null);
+      taskForm.initForm();
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
+    }
+  }
+
+  static public class RemoveTaskActionListener extends EventListener<UITeamBPortlet> {
+    public void execute(Event<UITeamBPortlet> event) throws Exception {
+      UITeamBPortlet teamBPortlet = event.getSource();
+      WebuiRequestContext context  = event.getRequestContext();
+      String taskId = context.getRequestParameter(OBJECTID);
+      TaskManager tm = CommonsUtils.getService(TaskManager.class);
+      if(tm.get(taskId) == null) {
+        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.taskNotFound", new String[]{}, ApplicationMessage.WARNING));
+        ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
+        return;
+      }
+      tm.delete(taskId);
+      event.getRequestContext().addUIComponentToUpdateByAjax(teamBPortlet);
     }
   }
 
@@ -284,7 +299,7 @@ public class UITeamBPortlet extends UIPortletApplication {
       TaskManager tm = CommonsUtils.getService(TaskManager.class);
       Task task = tm.get(taskId);
       if(task == null) {
-        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.groupNotFound", new String[]{}, ApplicationMessage.WARNING));
+        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.taskNotFound", new String[]{}, ApplicationMessage.WARNING));
         ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return;
       }

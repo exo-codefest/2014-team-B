@@ -25,7 +25,12 @@ import java.util.List;
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
+import org.exoplatform.addons.codefest.team_b.core.utils.TaskManagerUtils;
+import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.social.core.identity.model.Identity;
@@ -62,11 +67,12 @@ import org.exoplatfrom.teamb.webui.Utils;
 public class UITaskForm extends BaseUIForm implements UIPopupComponent {
 
   private Task task = null;
+  private String reporterIdentityId = null;
 
   final public static String FIELD_SUMMARY        = "Summary";
   final public static String FIELD_CREATED_DATE   = "CreatedDate";
   final public static String FIELD_DUE_DATE       = "DueDate";
-  final public static String FIELD_COMPLETED_DATE = "CompletedDate";
+//  final public static String FIELD_COMPLETED_DATE = "CompletedDate";
   final public static String FIELD_DESCRIPTION    = "Description";
   final public static String FIELD_PRIORITY       = "Priority";
   final public static String FIELD_GROUP          = "Group";
@@ -99,9 +105,9 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     addUIFormInput(selectBox);
     
     addUIFormInput(new UIFormStringInput(FIELD_BV, FIELD_BV, null));
-    addUIFormInput(new UIFormDateTimeInput(FIELD_DUE_DATE, FIELD_DUE_DATE, null, false));
-    addUIFormInput(new UIFormDateTimeInput(FIELD_COMPLETED_DATE, FIELD_COMPLETED_DATE, null, false));
     addUIFormInput(new UIFormStringInput(FIELD_ESTIMATION, FIELD_ESTIMATION, null));
+    addUIFormInput(new UIFormDateTimeInput(FIELD_DUE_DATE, FIELD_DUE_DATE, null, false));
+//    addUIFormInput(new UIFormDateTimeInput(FIELD_COMPLETED_DATE, FIELD_COMPLETED_DATE, null, false));
     
     setActions(new String[]{"Save", "Close"});
   }
@@ -114,39 +120,55 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     getUIFormSelectBox(FIELD_GROUP).setOptions(list);
   }
   
-  public void initForm(String currentUser) {
-    boolean isAddingNew = currentUser != null;
-    if (!isAddingNew && this.task != null) {
-      String reporterId = this.task.getValue(TaskEntity.reporterId);
-      currentUser = Utils.getIdentityById(reporterId).getRemoteId();
-    }
-    
-    org.exoplatform.services.security.Identity identity = ConversationState.getCurrent().getIdentity();
-    List<SelectItemOption<String>> grougList = new ArrayList<SelectItemOption<String>>();
-    List<String> spaces = new ArrayList<String>();
-    for (MembershipEntry membership : identity.getMemberships()) {
-      String gr = membership.getGroup();
-      if (gr.startsWith("/spaces") && ! spaces.contains(gr)) {
-        grougList.add(new SelectItemOption<String>(gr, gr));
-        spaces.add(gr);
+  private String getUserDisplayName(String userName) {
+    UserHandler userHandler = CommonsUtils.getService(OrganizationService.class).getUserHandler();
+    try {
+      User user = userHandler.findUserByName(userName);
+      userName = user.getDisplayName();
+      if (TaskManagerUtils.isEmpty(userName)) {
+        return user.getFirstName() + " " + user.getLastName();
       }
+    } catch (Exception e) {}
+    return userName;
+  }
+  
+  public void initForm() {
+    boolean isAddingNew = (this.task == null);
+    List<SelectItemOption<String>> grougList = new ArrayList<SelectItemOption<String>>();
+    org.exoplatform.services.security.Identity identity = ConversationState.getCurrent().getIdentity();
+    String currentUser = identity.getUserId();
+    String reporterId = currentUser;
+    String groupId = "";
+    if (!isAddingNew) {
+      this.reporterIdentityId = this.task.getValue(TaskEntity.reporterId);
+      reporterId = Utils.getIdentityById(this.reporterIdentityId).getRemoteId();
+      
+      //
+      groupId = this.task.getValue(TaskEntity.groupId);
+      grougList.add(new SelectItemOption<String>(groupId, groupId));
+      UIFormSelectBox selectBox = getUIFormSelectBox(FIELD_GROUP).setOptions(grougList);
+      selectBox.setValue(groupId);
+      selectBox.setDisabled(true);
+    } else {
+      List<String> spaces = new ArrayList<String>();
+      for (MembershipEntry membership : identity.getMemberships()) {
+        String gr = membership.getGroup();
+        if (gr.startsWith("/spaces") && ! spaces.contains(gr)) {
+          grougList.add(new SelectItemOption<String>(gr, gr));
+          spaces.add(gr);
+        }
+      }
+      groupId = spaces.get(0);
+      getUIFormSelectBox(FIELD_GROUP).setOptions(grougList).setValue(groupId);
     }
 
-    getUIFormSelectBox(FIELD_GROUP).setOptions(grougList);
-    
-    String groupId = null;
-    if (this.task != null) {
-      groupId = this.task.getValue(TaskEntity.groupId);  
-    } else {
-      groupId = getUIFormSelectBox(FIELD_GROUP).getValue();
-    }
-    
-    getUIStringInput(FIELD_REPORTER).setValue(currentUser);
+    getUIStringInput(FIELD_REPORTER).setValue(getUserDisplayName(reporterId));
     getUIStringInput(FIELD_REPORTER).setDisabled(true);
-    
+
     SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
     Space space = spaceService.getSpaceByGroupId(groupId);
     List<SelectItemOption<String>> list = new ArrayList<SelectItemOption<String>>();
+    // check with currentUser
     if (spaceService.isManager(space, currentUser)) {
       for (String member : space.getMembers()) {
         list.add(new SelectItemOption<String>(member, member));
@@ -155,8 +177,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     } else {
       String manager = space.getManagers()[0];
       list.add(new SelectItemOption<String>(manager, manager));
-      getUIFormSelectBox(FIELD_ASSIGNEE).setOptions(list);
-      getUIFormSelectBox(FIELD_ASSIGNEE).setDisabled(true);
+      getUIFormSelectBox(FIELD_ASSIGNEE).setOptions(list).setDisabled(true);
     }
     
     if (this.task != null) {
@@ -169,29 +190,21 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       getUIFormSelectBox(FIELD_ASSIGNEE).setValue(this.task.getValue(TaskEntity.assigneeId));
       
       //
-      getUIFormSelectBox(FIELD_GROUP).setValue(this.task.getValue(TaskEntity.groupId));
-      if (!isAddingNew) {
-        getUIFormSelectBox(FIELD_GROUP).setDisabled(true);
-      }
-      //
       getUIStringInput(FIELD_BV).setValue(this.task.getValue(TaskEntity.businessValue) + "");
       
       DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
       Calendar calendar = Calendar.getInstance();
       
-      getUIStringInput(FIELD_ESTIMATION).setValue(String.valueOf(this.task.getValue(TaskEntity.completeness)));
+      getUIStringInput(FIELD_ESTIMATION).setValue(String.valueOf(this.task.getValue(TaskEntity.estimation)));
       
-      // thoi han ket thuc
-      if (this.task.getValue(TaskEntity.estimation) != null) {  
-        System.out.println(this.task.getValue(TaskEntity.createdTime) + " : " + formatter.format(calendar.getTime()));
-        calendar.setTimeInMillis(this.task.getValue(TaskEntity.resolvedTime));
+      if (this.task.getValue(TaskEntity.dueDateTime) != null) {  
+        calendar.setTimeInMillis(this.task.getValue(TaskEntity.dueDateTime));
         getUIFormDateTimeInput(FIELD_DUE_DATE).setValue(formatter.format(calendar.getTime()));
       }
-      // thoi gian con lai
-      if (this.task.getValue(TaskEntity.remaining) != null) {
-        calendar.setTimeInMillis(this.task.getValue(TaskEntity.createdTime));
-        getUIFormDateTimeInput(FIELD_COMPLETED_DATE).setValue(formatter.format(calendar.getTime()));
-      }
+//      if (this.task.getValue(TaskEntity.remaining) != null) {
+//        calendar.setTimeInMillis(this.task.getValue(TaskEntity.createdTime));
+//        getUIFormDateTimeInput(FIELD_COMPLETED_DATE).setValue(formatter.format(calendar.getTime()));
+//      }
      
     }
   }
@@ -228,33 +241,49 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       String summary = uiForm.getUIStringInput(FIELD_SUMMARY).getValue();
       String priority = uiForm.getUIStringInput(FIELD_PRIORITY).getValue();
       String assignee = uiForm.getUIStringInput(FIELD_ASSIGNEE).getValue();
-      String reporter = uiForm.getUIStringInput(FIELD_REPORTER).getValue();
+      String estimation = uiForm.getUIStringInput(FIELD_ESTIMATION).getValue();
       String description = uiForm.getUIFormTextAreaInput(FIELD_DESCRIPTION).getValue();
       long bv = Long.parseLong(uiForm.getUIStringInput(FIELD_BV).getValue());
       Calendar dueDate = uiForm.getUIFormDateTimeInput(FIELD_DUE_DATE).getCalendar();
+      
+      IdentityManager idm = CommonsUtils.getService(IdentityManager.class);
+      Identity currentIdentity = idm.getOrCreateIdentity(OrganizationIdentityProvider.NAME, currentUser, false);
+
       UITeamBPortlet teamBPortlet = uiForm.getAncestorOfType(UITeamBPortlet.class);
-      teamBPortlet.createCalendarEvent(currentUser, summary, dueDate.getTime(), groupId, uiForm.getCalendarPriority(priority));
+      Task task = uiForm.task;
+      if (uiForm.task == null) {
+        EventCategory eventCategory = teamBPortlet.createCalendarEvent(currentUser, summary, dueDate.getTime(),
+                                                                       groupId, uiForm.getCalendarPriority(priority));
+        task = new Task();
+        task.setTaskId(eventCategory.getId());
+        task.setValue(TaskEntity.reporterId, currentIdentity.getId());
+        task.setValue(TaskEntity.groupId, groupId);
+        
+        Calendar currentTime = Calendar.getInstance();
+        task.setValue(TaskEntity.createdTime, currentTime.getTimeInMillis());
+        task.setValue(TaskEntity.updatedTime, currentTime.getTimeInMillis());
+        task.setValue(TaskEntity.status, Task.STATUS.OPEN.getName());
+      }
       
       //
-      IdentityManager idm = CommonsUtils.getService(IdentityManager.class);
-      Identity reporterIdentity = idm.getOrCreateIdentity(OrganizationIdentityProvider.NAME, reporter, false);
       String assigneeId = idm.getOrCreateIdentity(OrganizationIdentityProvider.NAME, assignee, false).getId();
       
       //
       TaskManager tm = CommonsUtils.getService(TaskManager.class);
-      Task task = new Task(); 
+      
       task.setValue(TaskEntity.title, summary);
-      task.setValue(TaskEntity.reporterId, reporterIdentity.getId());
       task.setValue(TaskEntity.assigneeId, assigneeId);
-      task.setValue(TaskEntity.groupId, groupId);
       task.setValue(TaskEntity.priority, priority);
-      task.setValue(TaskEntity.estimation, dueDate.getTime() + "");
-      task.setValue(TaskEntity.businessValue, bv);
       task.setValue(TaskEntity.description, description);
+      task.setValue(TaskEntity.businessValue, bv);
+      task.setValue(TaskEntity.estimation, estimation);
+      task.setValue(TaskEntity.dueDateTime, dueDate.getTimeInMillis());
       if (uiForm.task == null) {
-        tm.save(reporterIdentity, task);
+        tm.save(currentIdentity, task);
       } else {
-        tm.update(reporterIdentity, task, TaskEntity.title.getPropertyName(), TaskEntity.priority.getPropertyName(), TaskEntity.businessValue.getPropertyName(), TaskEntity.description.getPropertyName());
+        tm.update(currentIdentity, task, TaskEntity.title.getPropertyName(), 
+                  TaskEntity.dueDateTime.getPropertyName(), TaskEntity.priority.getPropertyName(),
+                  TaskEntity.businessValue.getPropertyName(), TaskEntity.description.getPropertyName());
       }
       
       teamBPortlet.cancelAction();

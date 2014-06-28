@@ -111,7 +111,7 @@ public class TaskDataBuilder {
       task.setValue(TaskEntity.description, description);
       task.setValue(createdTime, System.currentTimeMillis());
       task.setValue(updatedTime, System.currentTimeMillis());
-      task.setValue(resolvedTime, (long)-1);
+      task.setValue(resolvedTime, -1L);
       task.setValue(estimation, "2d");
       task.setValue(remaining, "2d");
       task.setValue(workLogged, "0d");
@@ -152,7 +152,7 @@ public class TaskDataBuilder {
     task.setValue(TaskEntity.description, "Can not access to Space home page");
     task.setValue(createdTime, System.currentTimeMillis());
     task.setValue(updatedTime, System.currentTimeMillis());
-    task.setValue(resolvedTime, (long)-1);
+    task.setValue(resolvedTime, -1L);
     task.setValue(estimation, "2d");
     task.setValue(remaining, "2d");
     task.setValue(workLogged, "0d");
@@ -186,7 +186,7 @@ public class TaskDataBuilder {
     task.setValue(TaskEntity.description, "Can not access to Space home page");
     task.setValue(createdTime, System.currentTimeMillis());
     task.setValue(updatedTime, System.currentTimeMillis());
-    task.setValue(resolvedTime, (long)-1);
+    task.setValue(resolvedTime, -1L);
     task.setValue(estimation, "2d");
     task.setValue(remaining, "2d");
     task.setValue(workLogged, "0d");

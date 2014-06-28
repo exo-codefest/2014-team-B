@@ -42,6 +42,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.UnsupportedRepositoryOperationException;
+
 import org.chromattic.api.query.Ordering;
 import org.chromattic.api.query.Query;
 import org.chromattic.api.query.QueryBuilder;
@@ -136,8 +140,10 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     entity.setFixVersion(task.getValue(fixVersion));
     entity.setBusinessValue(task.getValue(businessValue));
     entity.setStatus(task.getValue(status));
+    LOG.info("status = " + task.getValue(status));
     entity.setResolution(task.getValue(resolution));
     entity.setDescription(task.getValue(description));
+    LOG.info("createdDate = " + task.getValue(createdTime));
     entity.setCreatedTime(task.getValue(createdTime));
     entity.setCompleteness(task.getValue(completeness));
     entity.setUpdatedTime(task.getValue(updatedTime));
@@ -284,8 +290,8 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     //
     if(filter.withDate() != null) {
       whereExpression.and().startGroup();
-      whereExpression.greaterEq(filter.withDate(), filter.timeview().getFrom().getTimeInMillis());
-      whereExpression.and().lessEq(filter.withDate(), filter.timeview().getTo().getTimeInMillis());
+      whereExpression.greaterEq(filter.withDate(), filter.timeLine().from().getTimeInMillis());
+      whereExpression.and().lessEq(filter.withDate(), filter.timeLine().to().getTimeInMillis());
       whereExpression.endGroup();
     }
 
@@ -304,7 +310,7 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
 
       QueryResult<TaskEntity> results = (limit < 0) ? query.objects()
                                                    : query.objects((long)offset, (long)limit);
-      LOG.info("getAllByAssignee::size = " + results.size());
+      LOG.info("load::size = " + results.size());
       
       while (results.hasNext()) {
         TaskEntity currentTask = results.next();
@@ -317,6 +323,37 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     }
     return tasks;
   }
+  
+  
+//  @Override
+//  public List<Task> load(TaskFilter filter, int offset, int limit) {
+//  
+//    IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
+//    Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, filter.assignee(), false);
+//    
+//    String query = "SELECT * FROM exo:taskdefinition WHERE (exo:assigneeId = '" + identity.getId() +
+//        "') AND (exo:status = 'Open' OR exo:status = 'Reopen' ) AND (exo:createdTime >= " + 
+//    filter.timeLine().from().getTimeInMillis() + " AND exo:createdTime <= " + filter.timeLine().to().getTimeInMillis() + ")";
+//    
+//    LOG.info("load::query = " + query);
+//    
+//    NodeIterator it = nodes(query, offset, limit);
+//    LOG.info("load::size = " + it.getSize());
+//    List<Task> tasks = new ArrayList<Task>();
+//    while (it.hasNext()) {
+//      Task task;
+//      try {
+//        task = get(it.nextNode().getUUID());
+//        tasks.add(task);
+//      } catch (UnsupportedRepositoryOperationException e) {
+//        LOG.info("Failed to load by filer.", e.getMessage());
+//      } catch (RepositoryException e) {
+//        LOG.info("Failed to load by filer.", e.getMessage());
+//      }
+//    }
+//
+//    return tasks;
+//  }
 
   @Override
   public int count(TaskFilter filter) {

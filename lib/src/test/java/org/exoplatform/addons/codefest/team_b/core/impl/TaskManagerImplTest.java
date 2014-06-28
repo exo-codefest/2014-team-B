@@ -17,19 +17,23 @@
 package org.exoplatform.addons.codefest.team_b.core.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.exoplatform.addons.codefest.team_b.core.api.TaskListAccess;
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.data.TaskDataBuilder;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
+import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter;
+import org.exoplatform.addons.codefest.team_b.core.model.TaskFilter.TimeLine;
 import org.exoplatform.addons.codefest.team_b.core.test.AbstractCoreTest;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
-import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.spi.SpaceService;
 
 /**
@@ -148,6 +152,24 @@ public class TaskManagerImplTest extends AbstractCoreTest {
     assertEquals(20, list.size());
     
     list = taskManager.getAllByAssignee(maryIdentity.getRemoteId());
+    assertEquals(20, list.size());
+  }
+  
+  public void testLoadByDay() throws Exception {
+    tearDownTaskList = TaskDataBuilder.initMore(10, "task xxx", demoIdentity, maryIdentity).inject();
+    
+    tearDownTaskList.addAll(TaskDataBuilder.initMore(10, "task xxx", johnIdentity, maryIdentity).inject());
+    
+    
+    TaskFilter filter = new TaskFilter();
+    filter.status(Task.STATUS.OPEN);
+    filter.assignee(maryIdentity.getRemoteId());
+    filter.withDate(TaskEntity.createdTime);
+    filter.timeLine(TimeLine.WEEK);
+
+    TaskManager tm = CommonsUtils.getService(TaskManager.class);
+    List<Task> list = Arrays.asList(((TaskListAccess) tm.find(filter)).load(0, 20));
+    
     assertEquals(20, list.size());
   }
   
