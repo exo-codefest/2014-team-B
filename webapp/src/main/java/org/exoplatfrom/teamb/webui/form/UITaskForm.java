@@ -195,7 +195,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       getUIStringInput(FIELD_ESTIMATION).setValue(String.valueOf(this.task.getValue(TaskEntity.estimation)));
       
       if (this.task.getValue(TaskEntity.dueDateTime) != null) {  
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(this.task.getValue(TaskEntity.dueDateTime));
         getUIFormDateTimeInput(FIELD_DUE_DATE).setValue(formatter.format(calendar.getTime()));

@@ -104,7 +104,7 @@ Task task = uicomponent.getTask();
            <div class="control-label" >$dueDateLabel:</div>
            <div class="controls">
              <% if (task.get(Utils.DUE_DATE) != null) { %>
-             <%=task.get(Utils.DUE_DATE)%>
+             <%=uicomponent.getDate(task.get(Utils.DUE_DATE));%>
              <% } else { %>
                $noneLabel
              <% } %>
@@ -118,7 +118,7 @@ Task task = uicomponent.getTask();
            <div class="control-label" >$createDateLabel:</div>
            <div class="controls">
              <% if (task.get(Utils.CREATED_DATE) != null) { %>
-             <%=task.get(Utils.CREATED_DATE)%>
+             <%=uicomponent.getDate(task.get(Utils.CREATED_DATE));%>
              <% } else { %>
                $noneLabel
              <% } %>
@@ -156,7 +156,7 @@ Task task = uicomponent.getTask();
            <div class="control-label" >$completedDateLabel:</div>
            <div class="controls">
              <% if (task.get(Utils.COMPLETED_DATE) != null) { %>
-             <%=task.get(Utils.COMPLETED_DATE)%>
+             <%=uicomponent.getDate(task.get(Utils.COMPLETED_DATE));%>
              <% } else { %>
                $noneLabel
              <% } %>

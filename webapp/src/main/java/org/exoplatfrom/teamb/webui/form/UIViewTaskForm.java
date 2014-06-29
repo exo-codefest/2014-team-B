@@ -17,6 +17,8 @@
 package org.exoplatfrom.teamb.webui.form;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
@@ -70,6 +72,12 @@ public class UIViewTaskForm extends BaseUIForm implements UIPopupComponent {
 
   public void setTask(Task task) {
     this.task = task;
+  }
+  
+  public Date getDate(Long time) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTimeInMillis(time);
+    return calendar.getTime();
   }
   
   public void setTaskActivity(Task task) throws Exception {
