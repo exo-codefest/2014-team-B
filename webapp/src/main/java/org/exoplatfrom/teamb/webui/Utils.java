@@ -46,6 +46,7 @@ public class Utils {
   public static final String DUE_DATE = "DueDate";
   public static final String COMPLETENESS = "Completeness";
   public static final String COMPLETED_DATE = "CompletedDate";
+  public static final String ESTIMATION = "Estimation";
   public static final String DESCRIPTION = "Description";
   public static final String NOTE = "Note";
   
@@ -78,6 +79,7 @@ public class Utils {
     t.put(CREATED_DATE,  task.getValue(TaskEntity.createdTime));
     t.put(DUE_DATE,  task.getValue(TaskEntity.dueDateTime));
     t.put(COMPLETED_DATE, task.getValue(TaskEntity.resolvedTime));
+    t.put(ESTIMATION, task.getValue(TaskEntity.estimation));
     t.put(DESCRIPTION, task.getValue(TaskEntity.description));
     t.put(NOTE, task.getValue(TaskEntity.resolution));
         
