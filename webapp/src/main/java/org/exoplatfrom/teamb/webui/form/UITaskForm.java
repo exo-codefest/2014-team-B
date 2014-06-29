@@ -25,8 +25,10 @@ import java.util.List;
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
+import org.exoplatform.addons.codefest.team_b.core.utils.TaskManagerUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.social.core.identity.model.Identity;
@@ -34,6 +36,8 @@ import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvide
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -214,7 +218,8 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
 
   static public class SaveActionListener extends EventListener<UITaskForm> {
     public void execute(Event<UITaskForm> event) throws Exception {
-      String currentUser = event.getRequestContext().getRemoteUser();
+      WebuiRequestContext context = event.getRequestContext();
+      String currentUser = context.getRemoteUser();
       //
       UITaskForm uiForm = event.getSource();
       String groupId = uiForm.getUIFormSelectBox(FIELD_GROUP).getValue();
@@ -230,6 +235,13 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       }
       dueDate.set(Calendar.HOUR_OF_DAY, 0);
       dueDate.set(Calendar.MINUTE, 2);
+      //
+      int estimationVl = Utils.getTimeValue(estimation);
+      if(!TaskManagerUtils.isEmpty(estimation) && estimationVl == -1) {
+        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.formatLogError", new String[]{}, ApplicationMessage.WARNING));
+        ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
+        return;
+      }
       
       IdentityManager idm = CommonsUtils.getService(IdentityManager.class);
       Identity currentIdentity = idm.getOrCreateIdentity(OrganizationIdentityProvider.NAME, currentUser, false);

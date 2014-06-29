@@ -10,6 +10,12 @@
       var container = $('#uiTaskContainer');
       
       container.find('.taskTitle').css('max-width', function() { return ((container.width()-6)/3 - 65)});
+      
+      var timeLine = $('#timelineContainer');
+      var mW = timeLine.width();
+      timeLine.find('li.task-progress').each(function(id) {
+      });
+      
     },
     initTooltip : function(id) {
       if(id != null) {

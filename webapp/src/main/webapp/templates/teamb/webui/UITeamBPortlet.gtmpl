@@ -114,28 +114,75 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 				<tfoot>
 					<tr>
 						<td colspan="3" style="border-top: 1px solid #cccccc">
-							<div>Tasks time line.</div>
-							<ul>
+							<div style="border-bottom: 1px solid #cccccc">Tasks time line.</div>
+							<ul id="timelineContainer">
 							 <%
 							 //
 							 Timeline timeline;
+							 float w = 0f;
+							 float mW = 0;
 							 for(Task task in dones) {
 							   String labelColor = Task.getPriorityByValue(task.getValue(TaskEntity.priority)).getColor();
-							   //workLogged  da lam
-							   //estimation  du kien lam
-							   // completeness
 							   timeline = uicomponent.processTimeline(task);
 							   System.out.println(timeline.toString());
+							   float p = timeline.getPosition();
+							   if(p == 0 && "Day".equals(tabActive)) {
+							     p = w;
+							   }
+							   w = timeline.getWidth();
+							   if("Day".equals(tabActive)) {
+								   if((w + mW) > 100) {
+								     w = 100 -mW;
+								     p -= 2;
+								   }
+							   }
+							   mW += w;
+							   float ps = timeline.getPercent(); 
 							 %>
-								<li style="position: relative; height: 24px;">
-									<div class="progress" style="position: absolute; left: ${timeline.getPosition()}px; width: ${timeline.getWidth()}px">
-									  <div class="progress-bar progress-bar-${labelColor} ogress-bar-striped" role="progressbar" aria-valuenow="${timeline.getPercent()}" 
-									  	aria-valuemin="0" aria-valuemax="100" style="width: ${timeline.getPercent()}%">
-									    <span class="sr-only">${timeline.getPercent()}%</span>
+								<li class="task-progress">
+									<div class="progress" style="position: absolute; left: ${p}%; width: ${w}%">
+									  <div class="progress-bar progress-bar-${labelColor} ogress-bar-striped" role="progressbar" 
+									  	aria-valuenow="$ps"  aria-valuemin="0" aria-valuemax="100" style="width: ${ps}%">
+									    <div style="position: relative;">
+									    	<span class="sr-only" rel="tooltip" data-placement="bottom" title="${ps}%">${ps}%</span>
+									    </div>
 									  </div>
 									</div>
 								</li>
 							 <%}%>
+							 
+							 <%
+							 //
+							 for(Task task in inprogress) {
+							   String labelColor = Task.getPriorityByValue(task.getValue(TaskEntity.priority)).getColor();
+							   timeline = uicomponent.processTimeline(task);
+							   float p = timeline.getPosition();
+							   System.out.println(p + " " + tabActive);
+							   if(p == 0 && "Day".equals(tabActive)) {
+							     p = w;
+							   }
+							   w = timeline.getWidth();
+							   if("Day".equals(tabActive)) {
+								   if((w + mW) > 100) {
+								     w = 100 -mW;
+								     p -= 2;
+								   }
+							   }
+							   mW += w;
+							   float ps = timeline.getPercent(); 
+							 %>
+								<li class="task-progress">
+									<div class="progress" style="position: absolute; left: ${p}%; width: ${w}%">
+									  <div class="progress-bar progress-bar-${labelColor} ogress-bar-striped" role="progressbar" 
+									  	aria-valuenow="$ps"  aria-valuemin="0" aria-valuemax="100" style="width: ${ps}%">
+									    <div style="position: relative;">
+									    	<span class="sr-only" rel="tooltip" data-placement="bottom" title="${ps}%">${ps}%</span>
+									    </div>
+									  </div>
+									</div>
+								</li>
+							 <%}%>
+							 
 							</ul>
 						</td>
 					</tr>

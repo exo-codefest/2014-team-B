@@ -111,7 +111,7 @@ public class Utils {
     }
     input = input.toLowerCase().trim();
     String[] values = input.split(" ");
-    int m = 0;
+    int m = -1;
     for (int i = 0; i < values.length; i++) {
       String v = values[i];
       if (weekMatcher.matcher(v).find()) {

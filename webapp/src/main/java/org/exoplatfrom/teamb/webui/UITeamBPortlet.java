@@ -376,7 +376,8 @@ public class UITeamBPortlet extends UIPortletApplication {
         context.addUIComponentToUpdateByAjax(popupAction);
       }
       if(ignoreUpdate) {
-        ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
+        context.addUIComponentToUpdateByAjax(event.getSource());
+//        ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
       }
     }
   }
@@ -389,40 +390,52 @@ public class UITeamBPortlet extends UIPortletApplication {
       }
 
       @Override
-      public double position(long t) {
-        long start = TaskFilter.TimeLine.DAY.from().getTimeInMillis();
-        long end = TaskFilter.TimeLine.DAY.to().getTimeInMillis();
-        return calculatePosition(t, start, end);
+      public float position(long t) {
+        return 0;
+      }
+
+      @Override
+      public int days() {
+        return 1;
       }
     },
     WEEK {
       @Override
       public long time() {
-        return DAY.time() * 5;
+        return DAY.time() * WEEK.days();
       }
 
       @Override
-      public double position(long t) {
-        java.util.Calendar cal = TaskFilter.TimeLine.DAY.from();
-        cal.set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.MONDAY);
-        long start = cal.getTimeInMillis();
-        cal.set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.FRIDAY);
-        long end = cal.getTimeInMillis();
-        return calculatePosition(t, start, end);
+      public float position(long t) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTimeInMillis(t);
+        int d = cal.get(java.util.Calendar.DAY_OF_WEEK) - 1;
+        return calculatePosition(d, WEEK.days());
+      }
+
+      @Override
+      public int days() {
+        return 7;
       }
     },
     MONTH {
       @Override
       public long time() {
-        return WEEK.time() * 4;
+        return DAY.time() * MONTH.days();
       }
 
       @Override
-      public double position(long t) {
-        long start = TaskFilter.TimeLine.MONTH.from().getTimeInMillis();
-        long freeDay = 8 * 24 * 60 * 60 * 1000;
-        long end = TaskFilter.TimeLine.MONTH.to().getTimeInMillis() - freeDay;
-        return calculatePosition(t, start, end);
+      public float position(long t) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTimeInMillis(t);
+        int d = cal.get(java.util.Calendar.DAY_OF_MONTH) - 1;
+        return calculatePosition(d, MONTH.days());
+      }
+
+      @Override
+      public int days() {
+        int d = java.util.Calendar.getInstance().getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
+        return d;
       }
     };
     public static TIME getTIME(String name) {
@@ -434,13 +447,12 @@ public class UITeamBPortlet extends UIPortletApplication {
       return null;
     }
 
-    protected double calculatePosition(long t, long start, long end) {
-      long h = end - start;
-      long th = t - start;
-      return th / h;
+    protected float calculatePosition(float d, float ds) {
+      return ((1f*d) / (1f*ds)) * 100f;
     }
     public abstract long time();
-    public abstract double position(long t);
+    public abstract float position(long t);
+    public abstract int days();
   }
   
   //
@@ -455,14 +467,18 @@ public class UITeamBPortlet extends UIPortletApplication {
     if (taskTime == 0) {
       taskTime = org.exoplatfrom.teamb.webui.Utils.getTimeValue(task.getValue(TaskEntity.estimation));
     }
-    LOG.info("taskTime " + taskTime);
     TIME time = TIME.getTIME(getTabActive());
     Timeline timeline = new Timeline();
-    timeline.setWidth(taskTime / time.time());
+    float t = ((1f*taskTime) / (1f*time.time())) * 100f;
+    timeline.setWidth(t);
     //
     Long completeness = task.getValue(TaskEntity.completeness);
     if (completeness == null || completeness == 0) {
-      completeness = 100l;
+      if(Task.STATUS.RESOLVED.getName().equals(task.getValue(TaskEntity.status))) {
+        completeness = 100l;
+      } else {
+        completeness = 10l;
+      }
     }
     timeline.setPercent(completeness);
 
@@ -471,36 +487,35 @@ public class UITeamBPortlet extends UIPortletApplication {
       resolvedTime = task.getValue(TaskEntity.inProgressDate);
     }
     
-    LOG.info("resolvedTime1 " + resolvedTime);
     //
     resolvedTime = resolvedTime - (taskTime * 60 * 1000);
-    LOG.info("resolvedTime2 " + resolvedTime);
-    timeline.setPosition(time.position(resolvedTime));
+    float p = time.position(resolvedTime);
+    timeline.setPosition(p);
     //
     return timeline;
   }
   
   static public class Timeline {
-    double position;
-    double width;
-    double percent;
+    float position;
+    float width;
+    float percent;
     
-    public double getPosition() {
+    public float getPosition() {
       return position;
     }
-    public void setPosition(double position) {
+    public void setPosition(float position) {
       this.position = position;
     }
-    public double getWidth() {
+    public float getWidth() {
       return width;
     }
-    public void setWidth(double width) {
+    public void setWidth(float width) {
       this.width = width;
     }
-    public double getPercent() {
+    public float getPercent() {
       return percent;
     }
-    public void setPercent(double percent) {
+    public void setPercent(float percent) {
       this.percent = percent;
     }
     @Override

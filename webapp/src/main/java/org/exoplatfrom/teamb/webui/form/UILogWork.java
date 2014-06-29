@@ -1,6 +1,9 @@
 package org.exoplatfrom.teamb.webui.form;
 
 import org.exoplatform.addons.codefest.team_b.core.utils.TaskManagerUtils;
+import org.exoplatform.portal.application.PortalRequestContext;
+import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -35,12 +38,19 @@ public class UILogWork extends BaseUIForm implements UIPopupComponent {
   static public class SaveActionListener extends EventListener<UILogWork> {
     public void execute(Event<UILogWork> event) throws Exception {
       UILogWork logWork = event.getSource();
+      WebuiRequestContext context = event.getRequestContext();
       String value = logWork.getUIStringInput(FIELD_LOG_WORD).getValue(); 
       int timeLog = Utils.getTimeValue(value);
+      if(!TaskManagerUtils.isEmpty(value) && timeLog == -1) {
+        context.getUIApplication().addMessage(new ApplicationMessage("UITeamBPortlet.message.formatLogError", new String[]{}, ApplicationMessage.WARNING));
+        ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
+        return;
+      }
       TaskManagerUtils.logWork(logWork.getTaskId(), String.valueOf(timeLog) + "m");
       //
       UITeamBPortlet teamBPortlet = logWork.getAncestorOfType(UITeamBPortlet.class);
       teamBPortlet.cancelAction();
+      context.addUIComponentToUpdateByAjax(teamBPortlet);
     }
   }
 
