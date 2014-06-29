@@ -192,14 +192,10 @@ public class Task extends HashMap<String, Object> {
    * @param priorityInt
    */
   public void setPriority(int priorityInt) {
-    //getPriorityByName(display)
-    //String display = getPriorityByValue(priorityInt).getName();
-    setValue(TaskEntity.priority, priorityInt);
+    setValue(TaskEntity.priority, (Integer) priorityInt);
   }
 
   /**
-   * Sets the value to the given property
-   * @param propertyName
    * @param value
    */
   public <T> void setValue(PropertyLiteralExpression<T> property, T value) {

@@ -32,6 +32,7 @@ import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatfrom.teamb.webui.UITeamBPortlet;
+import org.exoplatfrom.teamb.webui.Utils;
 
 
 @ComponentConfigs({
@@ -61,7 +62,7 @@ public class UIChangeView extends BaseUIForm {
     for (MembershipEntry membership : identity.getMemberships()) {
       String gr = membership.getGroup();
       if (gr.startsWith("/spaces") && isManagerGroup(gr, membership.getMembershipType())) {
-        options.add(new SelectItemOption<String>(gr, gr));
+        options.add(new SelectItemOption<String>(Utils.getGroupDisplayName(gr), gr));
       }
     }
     getUIFormSelectBox(UITaskForm.FIELD_GROUP).setOptions(options).setValue(value);

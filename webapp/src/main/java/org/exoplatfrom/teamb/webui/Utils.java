@@ -20,7 +20,13 @@ import java.util.regex.Pattern;
 
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
+import org.exoplatform.addons.codefest.team_b.core.utils.TaskManagerUtils;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.services.organization.Group;
+import org.exoplatform.services.organization.GroupHandler;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
@@ -67,7 +73,7 @@ public class Utils {
     t.put(PRIORITY, task.getValue(TaskEntity.priority));
     t.put(BV, task.getValue(TaskEntity.businessValue));
     t.put(STATUS, task.getValue(TaskEntity.status));
-    t.put(GROUP, task.getValue(TaskEntity.groupId));
+    t.put(GROUP, sp.getDisplayName());
     t.put(COMPLETENESS, task.getValue(TaskEntity.completeness));
     t.put(CREATED_DATE,  task.getValue(TaskEntity.createdTime));
     t.put(DUE_DATE,  task.getValue(TaskEntity.dueDateTime));
@@ -119,5 +125,27 @@ public class Utils {
       }
     }
     return m;
+  }
+  
+  public static String getUserDisplayName(String userName) {
+    UserHandler userHandler = CommonsUtils.getService(OrganizationService.class).getUserHandler();
+    try {
+      User user = userHandler.findUserByName(userName);
+      userName = user.getDisplayName();
+      if (TaskManagerUtils.isEmpty(userName)) {
+        return user.getFirstName() + " " + user.getLastName();
+      }
+    } catch (Exception e) {}
+    return userName;
+  }
+
+  public static String getGroupDisplayName(String groupId) {
+    GroupHandler groupHandler = CommonsUtils.getService(OrganizationService.class).getGroupHandler();
+    try {
+      Group user = groupHandler.findGroupById(groupId);
+      return user.getLabel();
+    } catch (Exception e) {
+    }
+    return groupId;
   }
 }

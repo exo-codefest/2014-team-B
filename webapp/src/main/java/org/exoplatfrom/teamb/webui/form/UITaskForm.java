@@ -25,12 +25,8 @@ import java.util.List;
 import org.exoplatform.addons.codefest.team_b.core.api.TaskManager;
 import org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity;
 import org.exoplatform.addons.codefest.team_b.core.model.Task;
-import org.exoplatform.addons.codefest.team_b.core.utils.TaskManagerUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.commons.utils.CommonsUtils;
-import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.User;
-import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.social.core.identity.model.Identity;
@@ -119,18 +115,6 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     getUIFormSelectBox(FIELD_GROUP).setOptions(list);
   }
   
-  private String getUserDisplayName(String userName) {
-    UserHandler userHandler = CommonsUtils.getService(OrganizationService.class).getUserHandler();
-    try {
-      User user = userHandler.findUserByName(userName);
-      userName = user.getDisplayName();
-      if (TaskManagerUtils.isEmpty(userName)) {
-        return user.getFirstName() + " " + user.getLastName();
-      }
-    } catch (Exception e) {}
-    return userName;
-  }
-  
   public void initForm() {
     boolean isAddingNew = (this.task == null);
     List<SelectItemOption<String>> grougList = new ArrayList<SelectItemOption<String>>();
@@ -161,7 +145,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       getUIFormSelectBox(FIELD_GROUP).setOptions(grougList).setValue(groupId);
     }
 
-    getUIStringInput(FIELD_REPORTER).setValue(getUserDisplayName(reporterId));
+    getUIStringInput(FIELD_REPORTER).setValue(Utils.getUserDisplayName(reporterId));
     getUIStringInput(FIELD_REPORTER).setDisabled(true);
 
     SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
@@ -170,12 +154,12 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     // check with currentUser
     if (spaceService.isManager(space, currentUser)) {
       for (String member : space.getMembers()) {
-        list.add(new SelectItemOption<String>(member, member));
+        list.add(new SelectItemOption<String>(Utils.getUserDisplayName(member), member));
       }
       getUIFormSelectBox(FIELD_ASSIGNEE).setOptions(list);
     } else {
       String manager = space.getManagers()[0];
-      list.add(new SelectItemOption<String>(manager, manager));
+      list.add(new SelectItemOption<String>(Utils.getUserDisplayName(manager), manager));
       getUIFormSelectBox(FIELD_ASSIGNEE).setOptions(list).setDisabled(true);
     }
     
