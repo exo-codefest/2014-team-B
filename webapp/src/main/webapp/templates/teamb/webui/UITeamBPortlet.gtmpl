@@ -114,7 +114,7 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 				<tfoot>
 					<tr>
 						<td colspan="3" style="border-top: 1px solid #cccccc">
-							<div style="border-bottom: 1px solid #cccccc">Tasks time line.</div>
+							<div style="border-bottom: 1px solid #cccccc; font-weight:bold; font-size: 13px;">Tasks time line.</div>
 							<ul id="timelineContainer">
 							 <%
 							 //
@@ -127,7 +127,7 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 							   System.out.println(timeline.toString());
 							   float p = timeline.getPosition();
 							   if(p == 0 && "Day".equals(tabActive)) {
-							     p = w;
+							     p = mW;
 							   }
 							   w = timeline.getWidth();
 							   if("Day".equals(tabActive)) {
@@ -141,7 +141,7 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 							 %>
 								<li class="task-progress">
 									<div class="progress" style="position: absolute; left: ${p}%; width: ${w}%">
-									  <div class="progress-bar progress-bar-${labelColor} ogress-bar-striped" role="progressbar" 
+									  <div class="progress-bar progress-bar-${labelColor} progress-bar-striped" role="progressbar" 
 									  	aria-valuenow="$ps"  aria-valuemin="0" aria-valuemax="100" style="width: ${ps}%">
 									    <div style="position: relative;">
 									    	<span class="sr-only" rel="tooltip" data-placement="bottom" title="${ps}%">${ps}%</span>
@@ -157,9 +157,8 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 							   String labelColor = Task.getPriorityByValue(task.getValue(TaskEntity.priority)).getColor();
 							   timeline = uicomponent.processTimeline(task);
 							   float p = timeline.getPosition();
-							   System.out.println(p + " " + tabActive);
 							   if(p == 0 && "Day".equals(tabActive)) {
-							     p = w;
+							     p = mW;
 							   }
 							   w = timeline.getWidth();
 							   if("Day".equals(tabActive)) {
@@ -168,12 +167,11 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 								     p -= 2;
 								   }
 							   }
-							   mW += w;
 							   float ps = timeline.getPercent(); 
 							 %>
 								<li class="task-progress">
 									<div class="progress" style="position: absolute; left: ${p}%; width: ${w}%">
-									  <div class="progress-bar progress-bar-${labelColor} ogress-bar-striped" role="progressbar" 
+									  <div class="progress-bar progress-bar-${labelColor} progress-bar-striped" role="progressbar" 
 									  	aria-valuenow="$ps"  aria-valuemin="0" aria-valuemax="100" style="width: ${ps}%">
 									    <div style="position: relative;">
 									    	<span class="sr-only" rel="tooltip" data-placement="bottom" title="${ps}%">${ps}%</span>
@@ -181,8 +179,34 @@ _ctx.getRequestContext().getJavascriptManager().require("SHARED/TeamBPortlet", "
 									  </div>
 									</div>
 								</li>
-							 <%}%>
-							 
+							 <%}
+							 	 if(!"Day".equals(tabActive)) {
+							 	   print("<li class=\"line-progress\"> <div class=\"progress\">");
+							 	   int d = 7;
+							 	   
+							 	  String []days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+							 	   if("Month".equals(tabActive)) {
+							 	     d = org.exoplatfrom.teamb.webui.UITeamBPortlet.TIME.MONTH.days();
+							 	   }
+							 	  System.out.println(tabActive);
+							 	  float ps = (1f/(d*1f)) * 100f;
+							 	   for(int i = 0; i < d; ++i) {
+							 	     String n = String.valueOf((i+1));
+							 	     if("Week".equals(tabActive)) {
+								 	     n = days[i];
+								 	   }
+							 	     String clazz = "progress-bar-success";
+							 	     if(i % 2 == 0) {
+							 	      clazz = "progress-bar-info";
+							 	     }
+							 %>
+									  <div class="progress-bar $clazz" style="width: $ps%">
+									    <span class="sr-only">$n</span>
+									  </div>
+							 <%
+							 	   }
+							 	   print("</div></li>");
+							 	 } %>
 							</ul>
 						</td>
 					</tr>
