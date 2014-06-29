@@ -48,6 +48,7 @@ import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
+import org.exoplatform.webui.form.validator.PositiveNumberFormatValidator;
 import org.exoplatfrom.teamb.webui.UITeamBPortlet;
 import org.exoplatfrom.teamb.webui.Utils;
 
@@ -100,7 +101,8 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
     selectBox.setOnChange("OnChangeGroup");
     addUIFormInput(selectBox);
     
-    addUIFormInput(new UIFormStringInput(FIELD_BV, FIELD_BV, null).addValidator(MandatoryValidator.class));
+    addUIFormInput(new UIFormStringInput(FIELD_BV, FIELD_BV, null)
+                   .addValidator(MandatoryValidator.class).addValidator(PositiveNumberFormatValidator.class));
     addUIFormInput(new UIFormStringInput(FIELD_ESTIMATION, FIELD_ESTIMATION, null).addValidator(MandatoryValidator.class));
     addUIFormInput(new UIFormDateTimeInput(FIELD_DUE_DATE, FIELD_DUE_DATE, null, false));
     

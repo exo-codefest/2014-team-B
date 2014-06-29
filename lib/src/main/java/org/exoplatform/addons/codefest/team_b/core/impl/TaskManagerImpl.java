@@ -38,6 +38,7 @@ import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.Task
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.type;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.updatedTime;
 import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.workLogged;
+import static org.exoplatform.addons.codefest.team_b.core.chromattic.entity.TaskEntity.inProgressDate;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -146,6 +147,7 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     entity.setUpdatedTime(task.getValue(updatedTime));
     entity.setResolvedTime(task.getValue(resolvedTime));
     entity.setDueDateTime(task.getValue(dueDateTime));
+    entity.setInProgressDate(task.getValue(inProgressDate));
     entity.setEstimation(task.getValue(estimation));
     entity.setRemaining(task.getValue(remaining));
     entity.setWorkLogged(task.getValue(workLogged));
@@ -178,6 +180,7 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
     task.setValue(updatedTime, entity.getUpdatedTime());
     task.setValue(resolvedTime, entity.getResolvedTime());
     task.setValue(dueDateTime, entity.getDueDateTime());
+    task.setValue(inProgressDate, entity.getInProgressDate());
     task.setValue(estimation, entity.getEstimation());
     task.setValue(remaining, entity.getRemaining());
     task.setValue(workLogged, entity.getWorkLogged());
@@ -264,6 +267,8 @@ public class TaskManagerImpl extends AbstractManager implements TaskManager {
           entity.setResolvedTime(task.getValue(resolvedTime));
         } else if (name.equals(priority.getPropertyName())) {
           entity.setPriority(task.getValue(priority));
+        } else if (name.equals(inProgressDate.getPropertyName())) {
+          entity.setInProgressDate(task.getValue(inProgressDate));
         }
       }
       

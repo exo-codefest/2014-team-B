@@ -50,13 +50,15 @@ public class Task extends HashMap<String, Object> {
   
   public enum PRIORITY {
     
-    BLOCKER("Blocker", 5), CRITICAL("Critical", 4), MAJOR("Major", 3), MINOR("Minor", 2), TRIVIAL("Trivial", 1);
+    BLOCKER("Blocker", 5, "danger"), CRITICAL("Critical", 4, "warning"), MAJOR("Major", 3, "info"), MINOR("Minor", 2, "success"), TRIVIAL("Trivial", 1, "primary");
     
     private String name;
+    private String color;
     private int value;
-    private PRIORITY(String name, int value) {
+    private PRIORITY(String name, int value, String color) {
       this.name = name;
       this.value = value;
+      this.color = color;
     }
     
     @Override
@@ -70,6 +72,10 @@ public class Task extends HashMap<String, Object> {
     
     public int getValue() {
       return value;
+    }
+
+    public String getColor() {
+      return color;
     }
   };
   
@@ -208,8 +214,12 @@ public class Task extends HashMap<String, Object> {
    * @return
    */
   public <T> T getValue(PropertyLiteralExpression<T> property) {
-    Object val = this.get(property.getPropertyName());
-    return property.getType().cast(val);
+    try {
+      Object val = this.get(property.getPropertyName());
+      return property.getType().cast(val);
+    } catch (Exception e) {
+      return null;
+    }
   }
   
   @Override

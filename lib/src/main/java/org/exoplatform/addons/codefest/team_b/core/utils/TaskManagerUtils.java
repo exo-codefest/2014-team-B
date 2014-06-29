@@ -68,7 +68,8 @@ public class TaskManagerUtils {
     if (task != null) {
       task.setValue(TaskEntity.status, Task.STATUS.IN_PROGRESS.getName());
       task.setValue(TaskEntity.updatedTime, Calendar.getInstance().getTimeInMillis());
-      manager.update(updater, task, TaskEntity.status.getPropertyName(), TaskEntity.updatedTime.getPropertyName());
+      task.setValue(TaskEntity.inProgressDate, Calendar.getInstance().getTimeInMillis());
+      manager.update(updater, task, TaskEntity.status.getPropertyName(), TaskEntity.updatedTime.getPropertyName(), TaskEntity.inProgressDate.getPropertyName());
     }
   }
   

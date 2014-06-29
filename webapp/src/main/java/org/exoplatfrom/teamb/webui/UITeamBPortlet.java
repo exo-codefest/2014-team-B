@@ -155,7 +155,7 @@ public class UITeamBPortlet extends UIPortletApplication {
 
   protected List<Task> getInProgressTasks() throws Exception {
     TaskFilter filter = commonTaskFilter().status(Task.STATUS.IN_PROGRESS);
-    filter.withDate(TaskEntity.updatedTime);
+    filter.withDate(TaskEntity.inProgressDate);
 
     TaskManager tm = CommonsUtils.getService(TaskManager.class);
     ListAccess<Task> listAccess = tm.find(filter);
@@ -378,6 +378,134 @@ public class UITeamBPortlet extends UIPortletApplication {
       if(ignoreUpdate) {
         ((PortalRequestContext) context.getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
       }
+    }
+  }
+  
+  protected enum TIME {
+    DAY {
+      @Override
+      public long time() {
+        return 8 * 60;
+      }
+
+      @Override
+      public double position(long t) {
+        long start = TaskFilter.TimeLine.DAY.from().getTimeInMillis();
+        long end = TaskFilter.TimeLine.DAY.to().getTimeInMillis();
+        return calculatePosition(t, start, end);
+      }
+    },
+    WEEK {
+      @Override
+      public long time() {
+        return DAY.time() * 5;
+      }
+
+      @Override
+      public double position(long t) {
+        java.util.Calendar cal = TaskFilter.TimeLine.DAY.from();
+        cal.set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.MONDAY);
+        long start = cal.getTimeInMillis();
+        cal.set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.FRIDAY);
+        long end = cal.getTimeInMillis();
+        return calculatePosition(t, start, end);
+      }
+    },
+    MONTH {
+      @Override
+      public long time() {
+        return WEEK.time() * 4;
+      }
+
+      @Override
+      public double position(long t) {
+        long start = TaskFilter.TimeLine.MONTH.from().getTimeInMillis();
+        long freeDay = 8 * 24 * 60 * 60 * 1000;
+        long end = TaskFilter.TimeLine.MONTH.to().getTimeInMillis() - freeDay;
+        return calculatePosition(t, start, end);
+      }
+    };
+    public static TIME getTIME(String name) {
+      for (int i = 0; i < TIME.values().length; i++) {
+        if (TIME.values()[i].name().equalsIgnoreCase(name)) {
+          return TIME.values()[i];
+        }
+      }
+      return null;
+    }
+
+    protected double calculatePosition(long t, long start, long end) {
+      long h = end - start;
+      long th = t - start;
+      return th / h;
+    }
+    public abstract long time();
+    public abstract double position(long t);
+  }
+  
+  //
+  protected Timeline processTimeline(Task task) {
+    // position
+    // width
+    //
+    // workLogged da lam
+    // estimation du kien lam
+    // completeness
+    long taskTime = org.exoplatfrom.teamb.webui.Utils.getTimeValue(task.getValue(TaskEntity.workLogged));
+    if (taskTime == 0) {
+      taskTime = org.exoplatfrom.teamb.webui.Utils.getTimeValue(task.getValue(TaskEntity.estimation));
+    }
+    LOG.info("taskTime " + taskTime);
+    TIME time = TIME.getTIME(getTabActive());
+    Timeline timeline = new Timeline();
+    timeline.setWidth(taskTime / time.time());
+    //
+    Long completeness = task.getValue(TaskEntity.completeness);
+    if (completeness == null || completeness == 0) {
+      completeness = 100l;
+    }
+    timeline.setPercent(completeness);
+
+    Long resolvedTime = task.getValue(TaskEntity.resolvedTime);
+    if (resolvedTime == null || resolvedTime == 0) {
+      resolvedTime = task.getValue(TaskEntity.inProgressDate);
+    }
+    
+    LOG.info("resolvedTime1 " + resolvedTime);
+    //
+    resolvedTime = resolvedTime - (taskTime * 60 * 1000);
+    LOG.info("resolvedTime2 " + resolvedTime);
+    timeline.setPosition(time.position(resolvedTime));
+    //
+    return timeline;
+  }
+  
+  static public class Timeline {
+    double position;
+    double width;
+    double percent;
+    
+    public double getPosition() {
+      return position;
+    }
+    public void setPosition(double position) {
+      this.position = position;
+    }
+    public double getWidth() {
+      return width;
+    }
+    public void setWidth(double width) {
+      this.width = width;
+    }
+    public double getPercent() {
+      return percent;
+    }
+    public void setPercent(double percent) {
+      this.percent = percent;
+    }
+    @Override
+    public String toString() {
+      return "{position: " + position + ", width: " + width + ", percent: " + percent + "}";
     }
   }
 }

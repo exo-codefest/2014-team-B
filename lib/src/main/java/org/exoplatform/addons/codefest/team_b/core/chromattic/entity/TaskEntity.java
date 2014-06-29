@@ -181,6 +181,12 @@ public abstract class TaskEntity implements NamedEntity {
   public static final PropertyLiteralExpression<Long> dueDateTime =
       new PropertyLiteralExpression<Long>(Long.class, "exo:dueDateTime", "dueDateTime");
   
+  @Property(name = "exo:inProgressDate") // in progress date time
+  public abstract Long getInProgressDate();
+  public abstract void setInProgressDate(Long inProgressDate);
+  public static final PropertyLiteralExpression<Long> inProgressDate =
+      new PropertyLiteralExpression<Long>(Long.class, "exo:inProgressDate", "inProgressDate");
+  
   @Property(name = "exo:estimation") // the time estimation 1w 1d 1h 1m
   public abstract String getEstimation();
   public abstract void setEstimation(String estimation);
