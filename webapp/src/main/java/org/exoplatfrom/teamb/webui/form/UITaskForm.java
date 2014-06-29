@@ -128,7 +128,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       
       //
       groupId = this.task.getValue(TaskEntity.groupId);
-      grougList.add(new SelectItemOption<String>(groupId, groupId));
+      grougList.add(new SelectItemOption<String>(Utils.getGroupDisplayName(groupId), groupId));
       UIFormSelectBox selectBox = getUIFormSelectBox(FIELD_GROUP).setOptions(grougList);
       selectBox.setValue(groupId);
       selectBox.setDisabled(true);
@@ -137,7 +137,7 @@ public class UITaskForm extends BaseUIForm implements UIPopupComponent {
       for (MembershipEntry membership : identity.getMemberships()) {
         String gr = membership.getGroup();
         if (gr.startsWith("/spaces") && ! spaces.contains(gr)) {
-          grougList.add(new SelectItemOption<String>(gr, gr));
+          grougList.add(new SelectItemOption<String>(Utils.getGroupDisplayName(gr), gr));
           spaces.add(gr);
         }
       }
