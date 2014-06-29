@@ -9,7 +9,7 @@
                         .on('mouseout', function() { $(this).removeClass('display-over');});
       var container = $('#uiTaskContainer');
       
-      container.find('.taskTitle').css('max-width', function() { return ((container.width()-6)/3 - 65)});
+      container.find('.taskTitle').css('max-width', function() { return ((container.width()-6)/3 - 85)});
       
       var timeLine = $('#timelineContainer');
       var mW = timeLine.width();
