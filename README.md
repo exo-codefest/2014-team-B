@@ -41,6 +41,7 @@ Overview:
 Noteworthy points:
 --------------------
 * Support Standalone (web interface or mobile app interface) & Collaboration
+* Strong in collaboration as it use standard eXo Platform social intranet collaboration features: space/group, activity
 * Simple, Unique and friendliness interface; fit to mobile phones.
 * Painless fully integrated to PLF, pluggable on PLF. Integrate and enhance eXo calendar, social space and activity also.
 * Visualized timeline (like gantt chart) that is helpful for an over look of tasks done/running.
@@ -106,8 +107,8 @@ Features:
 Usages:
 --------------------
 
-Before being able to use the tool, you need to join a group (space) which tasks will be managed.
-So: look for your collaboration group, join to that group. Or: create your own collaboration group, invite members and manage tasks within the group.
+Before being able to use the tool, you need to join a group (space) which tasks will be managed. So: look for your collaboration group, join to that group. Or: create your own collaboration group, invite members and manage tasks within the group.
+Within a task you can give comments to the tasks. So that, related people can see the status.
 
 * Basic function
     * Create a new task:
@@ -119,6 +120,9 @@ So: look for your collaboration group, join to that group. Or: create your own c
         * Tasks Management Tool home
         * In the Open list
         * Drag and Drop an item to Inprogress list
+    * Give status:
+        * Click to edit button in the same line of the task => a task detail form would be showed
+        * Click to (PLF) add comment indicator, give comment and post it.
     * Finish a task:
         * Tasks Management Tool home
         * In the Inprogress list
