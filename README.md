@@ -29,19 +29,19 @@ Overview:
 * The tool planned to be implemented in 2 best fit user interfaces: web interface, mobile application interface. Both usages should have the same behaviors and main features. Thus, it's always at one's finger tips or in one's pocket. 
 
 * The tool's features target to be an effective tasks management tool for individuals by its smart algorithms:
-    * algorithm to suggest things to be done via prioritizing methodologies
-    * algorithm to optimize tasks should be done together
+    * Algorithm to suggest things to be done via prioritizing methodologies
+    * Algorithm to optimize tasks should be done together => improve effectiveness, ease multi tasking
     * It also have on time reminding about: due date, task update,...
 * The smart suggestions/organization will help assignees just to focus in tasks to do but not to think of organizing tasks queue which usually cause people to lost focus.
 * While the tool success to be an effective assistant for individuals => many people will use it => they know about eXo.
-* While it is well known to be a tool for individuals and collaboration => many groups of people will register and experiment eXo Cloud.
+* While it got well known to be a helpful tool for individuals and collaboration => many groups of people will register and experiment eXo Cloud.
 
 <img src="https://raw.githubusercontent.com/nghinv/CodeFest2014/master/documentation/images/collaboration_2.jpg" width="800">
 
 Noteworthy points:
 --------------------
 * Support Standalone (web interface or mobile app interface) & Collaboration
-* Strong in collaboration as it use standard eXo Platform social intranet collaboration features: space/group, activity
+* Strong in collaboration as it uses standard eXo Platform social intranet collaboration features: space/group, activity, notification
 * Simple, Unique and friendliness interface; fit to mobile phones.
 * Painless fully integrated to PLF, pluggable on PLF. Integrate and enhance eXo calendar, social space and activity also.
 * Visualized timeline (like gantt chart) that is helpful for an over look of tasks done/running.
